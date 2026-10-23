@@ -1,0 +1,41 @@
+name: Publicar sorteos
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Comprobar si hay sorteos nuevos o cambios de nombre
+        id: lista
+        run: echo "hash=$(python3 build.py hash)" >> "$GITHUB_OUTPUT"
+      - name: Recordar la ultima lista publicada
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: .ultima-lista
+          key: lista-${{ steps.lista.outputs.hash }}-${{ github.sha }}
+      - name: Generar la carpeta de cada sorteo
+        if: github.event_name != 'schedule' || steps.cache.outputs.cache-hit != 'true'
+        run: python3 build.py && mkdir -p .ultima-lista && echo ok > .ultima-lista/ok
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'schedule' || steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: _site
+      - id: deploy
+        if: github.event_name != 'schedule' || steps.cache.outputs.cache-hit != 'true'
+        uses: actions/deploy-pages@v4
