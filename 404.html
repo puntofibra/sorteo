@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sorteo de Navidad FuturMovil</title>
+<meta name="description" content="Elige tu número del 01 al 00. Gana la terminación del Gordo de Navidad.">
+<meta name="theme-color" content="#0f3d2b">
+<link rel="manifest" id="mf" href="/sorteo/manifest.json">
+<link rel="icon" href="/sorteo/icon-192.png">
+<link rel="apple-touch-icon" href="/sorteo/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" id="apt" content="Sorteo">
+<meta property="og:title" content="Sorteo de Navidad FuturMovil">
+<meta property="og:description" content="Elige tu número del 01 al 00. Gana la terminación del Gordo.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=IBM+Plex+Mono:wght@400;600;700&display=swap">
+<style>
+/* Décimo navideño: billete de lotería verdoso dentro de un marco de bastón de caramelo, sobre noche verde con nieve. Móvil en columna; en PC el décimo se abre en dos columnas (premio a la izquierda, tablero a la derecha). */
+:root{
+  --night:#0f3d2b;--night2:#1b6a4a;
+  --paper:#e6f0ea;--paper2:#f4f9f6;--paperdk:#c9d8cf;
+  --ink:#14233b;--red:#c8102e;--blue:#1c4f8c;--gold:#f6c744;--holly:#1fa66a;--muted:#5b6f66;
+  --fd:'Alfa Slab One',Georgia,serif;--fm:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0,var(--night2),var(--night) 70%) fixed,var(--night);color:var(--ink);font:14px/1.5 var(--fm);padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--night);z-index:30}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#snow,#conf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#snow{z-index:1}#conf{z-index:80}
+.defs{position:absolute;width:0;height:0}
+
+/* barra superior */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;max-width:1040px;margin:0 auto;padding:10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:flex;gap:4px;background:rgba(0,0,0,.35);border:1px solid rgba(246,199,68,.35);border-radius:10px;padding:3px;flex:1 1 260px}
+.seg button{flex:1;border:0;background:transparent;color:#cfe7d8;border-radius:8px;padding:8px 6px;font-weight:700;font-size:13px}
+.seg button.on{background:var(--gold);color:#2a1f00}
+.ib{background:rgba(0,0,0,.35);border:1px solid rgba(246,199,68,.35);color:#ffe9a8;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700}
+.ib.off{opacity:.6;text-decoration:line-through}
+
+.wrapall{position:relative;z-index:2;max-width:1040px;margin:0 auto}
+
+/* adornos colgando */
+.hang{display:flex;justify-content:space-around;align-items:flex-start;height:84px;padding:0 6px;margin-bottom:4px}
+.orn{display:flex;flex-direction:column;align-items:center;transform-origin:50% 0;animation:swing 3.2s ease-in-out infinite alternate}
+.orn:nth-child(2n){animation-duration:2.6s;animation-delay:-.8s}.orn:nth-child(3n){animation-duration:3.8s;animation-delay:-1.6s}
+@keyframes swing{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+.orn i{display:block;width:1px;background:#e8dcb0;height:var(--s)}
+.ball{border-radius:50%;position:relative;background:radial-gradient(circle at 30% 26%,rgba(255,255,255,.85) 0 7%,transparent 9%),radial-gradient(circle at 36% 32%,var(--l),var(--c) 52%,var(--d))}
+.ball::before{content:"";position:absolute;top:-7px;left:50%;width:10px;height:8px;transform:translateX(-50%);background:linear-gradient(90deg,#b8860b,#ffe08a,#b8860b);border-radius:2px 2px 0 0}
+.k1{--l:#ff8d9b;--c:#d4142f;--d:#6d0415}.k2{--l:#fff0b5;--c:#f6c744;--d:#8a6100}.k3{--l:#cfe9ff;--c:#6aa8e8;--d:#1c4d8c}.k4{--l:#9af0c1;--c:#1fa66a;--d:#0a4f31}
+
+/* marco de bastón + décimo */
+.cfr{padding:10px;border-radius:14px;background:repeating-linear-gradient(45deg,#d4142f 0 12px,#fff 12px 24px);box-shadow:0 14px 30px rgba(0,0,0,.35);position:relative}
+.holly{position:absolute;width:64px;height:44px;z-index:3}
+.holly.a{left:-10px;bottom:-14px}.holly.c{right:-10px;top:-12px;transform:scaleX(-1) rotate(8deg)}
+.t{background:var(--paper);border-radius:6px;padding:20px clamp(14px,3vw,28px) 18px;position:relative;min-width:0}
+.t::after{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(20,35,59,.018) 3px 4px)}
+.tline{display:flex;justify-content:space-between;gap:8px;font-size:11px;letter-spacing:.1em;border-bottom:2px solid var(--ink);padding-bottom:6px;flex-wrap:wrap}
+.head{display:flex;gap:14px;align-items:center;margin:14px 0 4px}
+.logo{width:56px;height:56px;border:2px solid var(--ink);background:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;flex:none;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:contain}
+h1{margin:0;font:400 clamp(28px,7vw,48px)/.95 var(--fd);color:var(--red);text-transform:uppercase;text-wrap:balance}
+.rng{font-weight:600;font-size:12px;letter-spacing:.2em;margin:6px 0 14px}
+.grid2{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:880px){.grid2{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:26px;align-items:start}.grid2>.colL{border-right:2px dashed var(--ink);padding-right:26px}}
+.colL,.colR{min-width:0;display:grid;gap:12px;align-content:start}
+.pr{border:2px solid var(--ink);display:grid;grid-template-columns:auto 1fr}
+.pr>span{background:var(--ink);color:var(--paper);padding:10px 10px;font-size:11px;letter-spacing:.2em;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-weight:700}
+.pr>div{padding:10px 14px;min-width:0}
+.pr b{font:400 clamp(22px,4.6vw,30px)/1.1 var(--fd);display:block;overflow-wrap:anywhere}
+.pr small{display:block;color:var(--muted)}
+.price{display:inline-flex;gap:6px;align-items:baseline;margin-top:6px;border:1.5px solid var(--red);color:var(--red);padding:1px 10px;font-weight:700}
+.price strong{font:400 20px var(--fd)}
+.lbl{font-size:11px;letter-spacing:.16em;font-weight:700;text-transform:uppercase}
+.cd{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));text-align:center;border:2px solid var(--ink)}
+.cd>div{padding:8px 0}.cd>div+div{border-left:1px solid var(--ink)}
+.cd b{display:block;font:700 clamp(20px,5vw,28px)/1.1 var(--fm);font-variant-numeric:tabular-nums}
+.cd span{font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.how{margin:0;padding-left:20px;display:grid;gap:4px;font-size:13px}
+.prog{height:8px;border:1.5px solid var(--ink);background:var(--paper2)}
+.prog i{display:block;height:100%;background:var(--red)}
+.board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:clamp(3px,1vw,7px)}
+.b{aspect-ratio:1;max-width:100%;padding:0;background:var(--paper2);border:1px solid var(--ink);font:600 clamp(10px,2.8vw,15px) var(--fm);color:var(--ink);position:relative;transition:transform .12s}
+.b:hover{background:var(--ink);color:#fff}
+.b.res{border:2px dashed var(--blue);color:var(--blue);background:var(--paper)}
+.b.ven{background:repeating-linear-gradient(-45deg,var(--paperdk) 0 3px,var(--paper) 3px 6px);color:#7f9388;border-color:#9bb0a4;cursor:default}
+.b.res:hover,.b.ven:hover{background:inherit}
+.b.res:hover{background:var(--paper);color:var(--blue)}
+.b.ven:hover{background:repeating-linear-gradient(-45deg,var(--paperdk) 0 3px,var(--paper) 3px 6px);color:#7f9388}
+.b.sel,.b.sel:hover{background:var(--paper);color:var(--red);box-shadow:inset 0 0 0 3px var(--red);transform:rotate(-6deg) scale(1.1);z-index:2}
+.b.win{background:var(--gold);color:var(--ink);box-shadow:0 0 0 3px var(--red);animation:glow 1s infinite alternate;z-index:2}
+@keyframes glow{to{box-shadow:0 0 0 3px var(--red),0 0 18px 6px rgba(246,199,68,.9)}}
+.b.mio::after{content:"";position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:var(--holly)}
+.lgd{display:flex;gap:14px;flex-wrap:wrap;font-size:12px}
+.lgd i{display:inline-block;width:11px;height:11px;margin-right:5px;vertical-align:-1px}
+.tray{border-top:2px dashed var(--ink);padding-top:12px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.chips b{background:var(--red);color:#fff;padding:1px 8px;font-size:13px}
+.trow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tot{font:400 26px var(--fd)}
+.btn{background:var(--red);color:#fff;border:0;padding:11px 18px;font:400 15px var(--fd);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;display:inline-block;text-align:center}
+.btn:hover{filter:brightness(1.1)}
+.btn.o{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.btn.g{background:var(--holly)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.bars{height:30px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 9px,var(--ink) 9px 12px,transparent 12px 14px);margin-top:16px}
+.foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;margin-top:6px;letter-spacing:.06em}
+.muted{color:var(--muted);font-size:12px}
+.result{border:2px solid var(--red);padding:12px;text-align:center;background:#fff8e1}
+.gordo{font:700 clamp(30px,8vw,44px) var(--fm);letter-spacing:.14em}
+.gordo u{text-decoration:none;color:var(--red);border-bottom:3px solid var(--red)}
+
+/* admin */
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:2px solid var(--ink)}
+.tabs button{background:transparent;border:0;padding:9px 4px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.tabs button+button{border-left:1px solid var(--ink)}
+.tabs button.on{background:var(--ink);color:var(--paper)}
+.st{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:2px solid var(--ink)}
+@media(min-width:600px){.st{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.st div{padding:8px 12px;border:1px solid rgba(20,35,59,.25)}
+.st b{display:block;font:400 22px var(--fd)}
+.st span{font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.rw{display:flex;align-items:center;gap:10px;border-top:1px dashed var(--ink);padding:8px 0;flex-wrap:wrap}
+.rw .n{font:400 20px var(--fd);color:var(--red);width:34px}
+.rw .i{flex:1;min-width:150px}
+.rw small{display:block;color:var(--muted)}
+label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-top:10px}
+.in{width:100%;background:var(--paper2);border:1.5px solid var(--ink);padding:9px 11px;margin-top:3px;color:var(--ink);border-radius:0}
+select.in option{background:#fff;color:var(--ink)}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-top:6px;font-weight:600}
+.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.acts .btn{flex:1}
+.edit{border:2px solid var(--blue);padding:12px;background:var(--paper2)}
+
+/* diálogos: un trocito de décimo */
+.ov{position:fixed;inset:0;z-index:50;background:rgba(5,25,16,.8);display:grid;place-items:center;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.dlg{width:100%;max-width:440px;max-height:92vh;overflow:auto;animation:pop .25s}
+@keyframes pop{from{transform:scale(.92) rotate(-2deg);opacity:0}}
+.dlg .t{padding:18px}
+.dlg h3{margin:0 0 8px;font:400 26px var(--fd);color:var(--red);text-transform:uppercase}
+.intro{text-align:center}
+.intro .big{font:400 clamp(30px,9vw,44px)/1 var(--fd);color:var(--red);text-transform:uppercase;margin:8px 0}
+.digs{display:flex;gap:6px;justify-content:center;margin:14px 0}
+.dg{width:clamp(44px,13vw,60px);height:clamp(62px,17vw,84px);display:grid;place-items:center;font:700 clamp(32px,9vw,50px) var(--fm);background:#fff;border:2px solid var(--ink);font-variant-numeric:tabular-nums}
+.dg.fin{border-color:var(--red);color:var(--red);border-width:3px}
+.dg.stop{animation:pop .3s}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--red);padding:9px 16px;font-weight:700;z-index:90;max-width:90vw;text-align:center}
+.demo{position:relative;z-index:2;max-width:1040px;margin:14px auto 0;text-align:center;color:#cfe7d8;font-size:12px}
+@media(prefers-reduced-motion:reduce){.orn,.b.win{animation:none}}
+</style>
+<style>
+:root{padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+.topbar .sp{flex:1}
+.topbar{background:var(--night);box-shadow:0 6px 14px rgba(0,0,0,.25);max-width:none;padding-left:max(16px,calc((100vw - 1040px)/2));padding-right:max(16px,calc((100vw - 1040px)/2));margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
+.ph-size{display:grid;place-items:center;text-align:center;font-size:12px;line-height:1.3;color:var(--muted)}
+.ph-size b{display:block;font-size:16px;color:var(--ink)}
+.ib.adm{border-color:rgba(255,255,255,.25);color:#cfe7d8}
+.loading{text-align:center;padding:60px 0;font-weight:700;letter-spacing:.1em}
+.loading i{display:inline-block;width:10px;height:10px;background:var(--red);margin:0 3px;animation:bl 1s infinite alternate}
+.loading i:nth-child(2){animation-delay:.2s}.loading i:nth-child(3){animation-delay:.4s}
+@keyframes bl{to{opacity:.2}}
+.share{display:grid;gap:8px;margin-top:10px}
+.share a,.share button{display:block;text-align:center;text-decoration:none;padding:10px;border:2px solid var(--ink);color:var(--ink);font-weight:700;background:var(--paper2)}
+.ios{font-size:13px;line-height:1.6}
+.lnk{background:none;border:0;color:var(--blue);text-decoration:underline;font-size:13px;padding:4px}
+.tabs.t5{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:560px){.tabs.t5{grid-template-columns:repeat(3,minmax(0,1fr))}.tabs.t5 button{border-bottom:1px solid var(--ink)}}
+.cli{border:2px solid var(--ink);background:var(--paper2);padding:10px 12px;display:grid;gap:3px;margin-top:8px}
+.cli.off{opacity:.65}
+.cli .url a{color:var(--blue);font-size:12px;word-break:break-all}
+.cli .acts{margin-top:6px}.cli .acts .btn{flex:1 1 auto}
+.pill{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--holly);color:#fff;padding:1px 8px}
+.pill.no{background:var(--muted)}
+textarea.in{resize:vertical;font:inherit}
+.sec{border:2px solid var(--ink);padding:12px;display:grid;gap:2px;background:var(--paper2)}
+.sec .lbl{color:var(--red);margin-bottom:2px}
+.tip{font-size:13px;line-height:1.5;border-left:4px solid var(--gold);background:#fff8e1;padding:8px 10px;margin:4px 0 10px}
+.warn{font-size:13px;border-left:4px solid var(--red);background:#fde8eb;padding:8px 10px;margin-bottom:10px}
+.okk{font-size:13px;border-left:4px solid var(--holly);background:#e3f6ec;padding:8px 10px;margin-bottom:10px}
+.lgrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.logo.big{width:120px;height:120px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/16px 16px}
+.lgbtns{flex:1;min-width:160px;display:grid;gap:8px}
+.modes{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink)}
+.modes button{border:0;background:transparent;padding:8px;font-weight:700}
+.modes button.on{background:var(--ink);color:var(--paper)}
+.ios b{color:var(--red)}
+</style>
+</head>
+<body>
+<svg class="defs" aria-hidden="true"><defs>
+<symbol id="holly" viewBox="0 0 60 40"><path d="M30 22C20 6 4 10 2 20c8-2 14 6 28 2z" fill="#1fa66a"/><path d="M30 22C40 6 56 10 58 20c-8-2-14 6-28 2z" fill="#168a57"/><circle cx="26" cy="24" r="5" fill="#d4142f"/><circle cx="34" cy="24" r="5" fill="#d4142f"/><circle cx="30" cy="31" r="5" fill="#e8283f"/></symbol>
+</defs></svg>
+<canvas id="snow" aria-hidden="true"></canvas>
+<canvas id="conf" aria-hidden="true"></canvas>
+
+<div class="topbar">
+  <button class="ib" id="bMus" type="button">Música</button>
+  <button class="ib" id="bSfx" type="button">Sonidos</button>
+  <span class="sp"></span>
+  <button class="ib" id="bInst" type="button">Instalar app</button>
+  <button class="ib" id="bShare" type="button">Compartir</button>
+  <button class="ib adm" id="bAdm" type="button">Admin</button>
+</div>
+
+<div class="wrapall">
+  <div class="hang" id="hang" aria-hidden="true"></div>
+  <div class="cfr">
+    <svg class="holly a" aria-hidden="true"><use href="#holly"/></svg>
+    <svg class="holly c" aria-hidden="true"><use href="#holly"/></svg>
+    <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
+  </div>
+</div>
+<p class="demo" id="pie">Sorteo de Navidad 2026</p>
+
+<div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
+  <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22·XII·2026</span></div>
+  <div class="big" id="iT">Gran Sorteo de Navidad</div>
+  <p>100 números, del 01 al 00. Si tu número termina igual que el Gordo, te llevas el premio.</p>
+  <div class="acts"><button class="btn" id="iGo" type="button">Entrar con sonido</button><button class="btn o" id="iNo" type="button">Sin sonido</button></div>
+</div></div></div></div>
+
+<script>
+var API='https://script.google.com/macros/s/AKfycbyaLjO7lrZktZVERB6Fxvaq8DengZpBiEQSJ96R7iyMWwXbxQSy8i8Klo7g51-PqdX1Ig/exec';
+(function(){
+'use strict';
+var BASE='/sorteo/',mT=location.pathname.match(/\/x\/([a-z0-9-]+)/);
+if(!mT){location.replace(BASE+'x/main/'+location.hash);return}
+var TEN=mT[1],HOME=location.origin+BASE+'x/'+TEN+'/';
+var $=function(s){return document.querySelector(s)};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var pad=function(n){return (n<10?'0':'')+n};
+var eur=function(n){n=Math.round(n*100)/100;return (n%1===0?String(n):n.toFixed(2).replace('.',','))+' €'};
+var lk=function(k){return k.replace('sorteo_','sorteo_'+TEN+'_')};
+var ls={get:function(k,d){try{var v=localStorage.getItem(lk(k));return v==null?d:JSON.parse(v)}catch(e){return d}},set:function(k,v){try{localStorage.setItem(lk(k),JSON.stringify(v))}catch(e){}}};
+function setApp(nm){nm=String(nm||'Sorteo').trim()||'Sorteo';if(setApp.last===nm)return;setApp.last=nm;ls.set('sorteo_app',nm);
+ var o=location.origin,m={id:BASE+'x/'+TEN+'/',name:nm,short_name:nm,description:'Sorteo de Navidad de '+nm,start_url:HOME,scope:HOME,display:'standalone',background_color:'#0f3d2b',theme_color:'#0f3d2b',lang:'es',
+  icons:[{src:o+BASE+'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:o+BASE+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:o+BASE+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};
+ document.getElementById('mf').href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));document.getElementById('apt').content=nm}
+setApp(ls.get('sorteo_app',TEN==='main'?'FuturMovil':'Sorteo'));
+var ORDER=[];for(var i=1;i<100;i++)ORDER.push(i);ORDER.push(0);
+var MAX=10;
+
+var S={cli:null,cfg:null,n:{},adm:null,win:null,sel:{},view:'c',tab:'n',edit:null,mios:ls.get('sorteo_mios',{}),token:ls.get('sorteo_tok',''),ver:0,busy:false,lastGordo:null};
+
+function api(action,data){data=data||{};data.action=action;data.s=TEN;if(S.token&&['estado','reservar','login','recuperar'].indexOf(action)<0)data.token=S.token;
+ return fetch(API,{method:'POST',body:JSON.stringify(data)}).then(function(r){return r.json()}).then(function(j){
+  if(!j.ok&&j.error==='SESION'){S.token='';ls.set('sorteo_tok','');S.view='c';render();toast('La sesión de admin ha caducado. Vuelve a entrar.');throw new Error('SESION')}
+  return j})}
+
+/* adornos */
+$('#hang').innerHTML=[['k1',10,30],['k2',34,36],['k4',16,28],['k3',40,34],['k1',20,30],['k2',6,26],['k4',28,32]].map(function(x){return '<div class="orn"><i style="--s:'+x[1]+'px"></i><div class="ball '+x[0]+'" style="width:'+x[2]+'px;height:'+x[2]+'px"></div></div>'}).join('');
+
+/* nieve */
+(function(){var cv=$('#snow'),cx=cv.getContext('2d'),W,H,F=[],red=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mk(r){return{x:Math.random()*W,y:r?Math.random()*H:-10,r:Math.random()*3+.8,v:Math.random()*.9+.35,a:Math.random()*6.28,s:Math.random()*.02+.005}}
+function init(){W=cv.width=innerWidth;H=cv.height=innerHeight;var n=Math.floor(Math.min(140,W*H/9000)*(red?.3:1));F=[];for(var i=0;i<n;i++)F.push(mk(true))}
+function loop(){if(!document.hidden){cx.clearRect(0,0,W,H);cx.fillStyle='#fff';F.forEach(function(f){f.y+=f.v;f.a+=f.s;f.x+=Math.sin(f.a)*.6;if(f.y>H+5){f.y=-8;f.x=Math.random()*W}cx.globalAlpha=.35+f.r/5*.5;cx.beginPath();cx.arc(f.x,f.y,f.r,0,7);cx.fill()})}requestAnimationFrame(loop)}
+addEventListener('resize',init);init();loop()})();
+
+/* confeti */
+var Conf=(function(){var cv=$('#conf'),cx=cv.getContext('2d'),P=[],run=false,cols=['#c8102e','#f6c744','#1fa66a','#6aa8e8','#fff','#14233b'];
+function size(){cv.width=innerWidth;cv.height=innerHeight}addEventListener('resize',size);size();
+function burst(x,y,n){for(var i=0;i<n;i++){var a=Math.random()*6.28,s=4+Math.random()*9;P.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-6,w:6+Math.random()*7,h:4+Math.random()*6,r:Math.random()*6,vr:(Math.random()-.5)*.5,c:cols[i%6],l:0})}if(!run){run=true;requestAnimationFrame(loop)}}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);P=P.filter(function(p){return p.y<cv.height+20&&p.l<260});P.forEach(function(p){p.vy+=.22;p.vx*=.992;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.l++;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore()});if(P.length)requestAnimationFrame(loop);else run=false}
+return{burst:burst}})();
+
+/* sonido con Web Audio */
+var Snd=(function(){var ac,mg,mus,noise,sfx=ls.get('sorteo_sfx',true),music=ls.get('sorteo_mus',true),timer,nextT=null,loops=[];
+var N={C:261.63,D:293.66,E:329.63,F:349.23,G:392,A:440,B:493.88},P=[659.25,783.99,880,1046.5,1318.5];
+function init(){if(!ac){var A=window.AudioContext||window.webkitAudioContext;if(!A)return false;ac=new A();mg=ac.createGain();mg.gain.value=.9;mg.connect(ac.destination);mus=ac.createGain();mus.gain.value=.5;mus.connect(mg);var l=ac.sampleRate*.3;noise=ac.createBuffer(1,l,ac.sampleRate);var d=noise.getChannelData(0);for(var i=0;i<l;i++)d[i]=Math.random()*2-1}if(ac.state==='suspended')ac.resume();return true}
+function tone(f,t,d,o){o=o||{};var os=ac.createOscillator(),g=ac.createGain(),out=g;os.type=o.type||'sine';os.frequency.setValueAtTime(f,t);if(o.slide)os.frequency.exponentialRampToValueAtTime(o.slide,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(o.v||.2,t+(o.a||.006));g.gain.exponentialRampToValueAtTime(.0001,t+d);os.connect(g);if(o.lp){var fl=ac.createBiquadFilter();fl.type='lowpass';fl.frequency.value=o.lp;g.connect(fl);out=fl}out.connect(o.dest||mg);os.start(t);os.stop(t+d+.05)}
+function bell(f,t,v){tone(f,t,1.3,{v:v});tone(f*2.76,t,.55,{v:v*.3});tone(f*5.4,t,.25,{v:v*.12})}
+function shaker(t,v,dest){var s=ac.createBufferSource();s.buffer=noise;var hp=ac.createBiquadFilter();hp.type='highpass';hp.frequency.value=5500;var g=ac.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.07);s.connect(hp);hp.connect(g);g.connect(dest||mg);s.start(t);s.stop(t+.1)}
+function now(){return ac.currentTime}
+var api={init:init,get sfx(){return sfx},get music(){return music},
+ setSfx:function(v){sfx=v;ls.set('sorteo_sfx',v)},setMusic:function(v){music=v;ls.set('sorteo_mus',v);if(v)api.start();else api.stop()},
+ pick:function(i){if(!sfx||!init())return;bell(P[i%5],now(),.22)},
+ unpick:function(){if(!sfx||!init())return;tone(392,now(),.14,{type:'triangle',v:.12,slide:300})},
+ click:function(){if(!sfx||!init())return;bell(1046.5,now(),.12)},
+ tick:function(){if(!sfx||!ac)return;tone(2200+Math.random()*400,now(),.03,{type:'square',v:.035})},
+ stopDigit:function(fin){if(!sfx||!init())return;bell(fin?1318.5:659.25,now(),.26)},
+ err:function(){if(!sfx||!init())return;tone(160,now(),.22,{type:'sawtooth',v:.12,lp:600});tone(130,now()+.2,.25,{type:'sawtooth',v:.12,lp:600})},
+ jingle:function(){if(!sfx||!init())return;var t=now();for(var i=0;i<10;i++)shaker(t+i*.055+Math.random()*.02,.12);for(i=0;i<4;i++)bell(P[(i+2)%5]*1.5,t+i*.07,.08)},
+ ok:function(){if(!sfx||!init())return;var t=now();[523.25,659.25,783.99,1046.5].forEach(function(f,i){bell(f,t+i*.1,.2)});api.jingle()},
+ fanfare:function(){if(!sfx||!init())return;var t=now();[[392,0],[523.25,.2],[659.25,.4]].forEach(function(x){tone(x[0],t+x[1],.22,{type:'sawtooth',v:.07,lp:1800,a:.03})});[523.25,659.25,783.99,1046.5].forEach(function(f){tone(f,t+.62,1.5,{type:'sawtooth',v:.06,lp:2000,a:.04})});for(var i=0;i<14;i++)bell(P[i%5]*(i%2?1:2),t+.62+i*.09,.12);api.jingle()},
+ start:function(){if(!music||!init())return;if(!timer&&nextT===null)loop()},
+ stop:function(){clearTimeout(timer);timer=null;nextT=null;if(ac)loops.forEach(function(g){try{g.gain.setTargetAtTime(0,ac.currentTime,.05)}catch(e){}});loops=[]}};
+var A='E1 E1 E2 E1 E1 E2 E1 G1 C1.5 D.5 E4 F1 F1 F1.5 F.5 F1 E1 E1 E.5 E.5',B1='E1 D1 D1 E1 D2 G2',B2='G1 G1 F1 D1 C4';
+var SEQ=(A+' '+B1+' '+A+' '+B2).split(' ').map(function(x){return [x.charAt(0),parseFloat(x.slice(1))]});
+var BASS=[130.8,130.8,130.8,130.8,174.6,130.8,98,98,130.8,130.8,130.8,130.8,174.6,130.8,98,130.8];
+function loop(){if(!music||!ac)return;var beat=.4,t0=nextT||ac.currentTime+.08,t=t0,g=ac.createGain();g.connect(mus);loops.push(g);if(loops.length>3)loops.shift();
+ SEQ.forEach(function(s){var f=N[s[0]]*2;tone(f,t,.8,{v:.09,dest:g});tone(f*2,t,.35,{v:.03,dest:g});t+=s[1]*beat});
+ for(var m=0;m<16;m++){tone(BASS[m],t0+m*4*beat,.9,{v:.12,dest:g});tone(BASS[m],t0+(m*4+2)*beat,.7,{v:.08,dest:g})}
+ for(var b=0;b<64;b++)shaker(t0+b*beat,.025,g);
+ nextT=t0+64*beat;timer=setTimeout(loop,Math.max(100,(nextT-ac.currentTime-1)*1000))}
+return api})();
+
+function toast(m){var t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove()},3000)}
+function st(n){return S.view==='a'&&S.adm?S.adm[n].e:(S.n[n]||'libre')}
+function stats(){var l=0,r=0,p=0;for(var k=0;k<100;k++){var e=st(k);if(e==='libre')l++;else if(e==='reservado')r++;else p++}return{l:l,r:r,p:p,rec:p*S.cfg.precio}}
+function logoH(){return S.cfg.logo?'<img alt="Logo" src="'+esc(S.cfg.logo)+'">':'LOGO'}
+function winNum(){return S.cfg.gordo?Number(S.cfg.gordo.slice(-2)):null}
+
+function board(id,adm){var h='',w=winNum();ORDER.forEach(function(n){var e=st(n),c='b';
+ if(e==='pagado')c+=' ven';else if(e==='reservado')c+=' res';
+ if(!adm&&S.sel[n])c='b sel';if(w===n)c='b win';if(!adm&&S.mios[n])c+=' mio';
+ var tt=adm&&S.adm[n].nombre?S.adm[n].nombre:(S.mios[n]?'Tu número':'');
+ h+='<button type="button" class="'+c+'" data-n="'+n+'" title="'+esc(tt)+'" aria-label="Número '+pad(n)+(e!=='libre'?', '+e:'')+'">'+pad(n)+'</button>'});
+ return '<div class="board" id="'+id+'">'+h+'</div>'}
+function legend(){return '<div class="lgd"><span><i style="border:1px solid var(--ink);background:var(--paper2)"></i>Libre</span><span><i style="border:2px dashed var(--blue)"></i>Reservado</span><span><i style="background:repeating-linear-gradient(-45deg,var(--paperdk) 0 2px,var(--paper) 2px 4px);border:1px solid #9bb0a4"></i>Vendido</span>'+(Object.keys(S.mios).length&&S.view==='c'?'<span><i style="border-radius:50%;background:var(--holly);width:8px;height:8px"></i>Tus números</span>':'')+'</div>'}
+function head(sub){return '<div class="tline"><span>LOTERÍA DE NAVIDAD · '+sub+'</span><span>22·XII·2026</span></div><div class="head"><div class="logo">'+logoH()+'</div><h1>'+esc(S.cfg.titulo)+'</h1></div><p class="rng">NÚMEROS 01 AL 00 · SERIE '+esc(String(S.cfg.empresa||'FuturMovil').toUpperCase())+'</p>'}
+function foot(){return '<div class="bars" aria-hidden="true"></div><div class="foot"><span>Gana la terminación del Gordo</span><span>'+eur(S.cfg.precio)+' por número</span></div>'}
+
+function winText(){var w=S.win;if(!w)return '';return w.e==='pagado'?'Gana '+esc(w.nombre)+'. Enhorabuena.':w.e==='reservado'?'El '+pad(w.n)+' está reservado y sin pagar.':'El '+pad(w.n)+' no se vendió. Sorteo desierto.'}
+function viewC(){var c=S.cfg,s=stats(),ocu=s.r+s.p,res='';
+ if(c.gordo&&S.win){res='<div class="result"><div class="lbl">Resultado del sorteo</div><div class="gordo">'+esc(c.gordo.slice(0,3))+'<u>'+esc(c.gordo.slice(3))+'</u></div><p>Terminación <b>'+pad(S.win.n)+'</b>. '+winText()+(S.mios[S.win.n]?' <b>¡Es tu número!</b>':'')+'</p><button class="btn o sm" type="button" id="bRev">Ver la animación</button></div>'}
+ var mios=Object.keys(S.mios).map(Number).filter(function(n){return st(n)!=='libre'}).sort(function(a,b){return (a||100)-(b||100)});
+ return head('CLIENTES')+'<div class="grid2"><div class="colL">'
+ +'<div class="pr"><span>PREMIO</span><div><b>'+esc(c.premio)+'</b>'+(c.detalle?'<small>'+esc(c.detalle)+'</small>':'')+'<div class="price"><strong>'+eur(c.precio)+'</strong> por número</div></div></div>'
+ +'<div><div class="lbl">Faltan para el Gordo</div><div class="cd" id="cd"></div></div>'
+ +(mios.length?'<div><div class="lbl">Tus números</div><div class="chips">'+mios.map(function(n){return '<b style="background:'+(st(n)==='pagado'?'var(--holly)':'var(--blue)')+'">'+pad(n)+'</b>'}).join('')+'</div><div class="muted">Verde: pagado · Azul: pendiente de pago</div></div>':'')
+ +'<div><div class="lbl">Cómo se juega</div><ol class="how"><li>Elige uno o varios números del 01 al 00.</li><li>Resérvalos con tu nombre y teléfono.</li><li>Paga en las '+c.horas+' horas siguientes y confirmamos tu número.</li><li>Gana quien tenga las dos últimas cifras del Gordo.</li></ol></div>'
+ +'</div><div class="colR">'+res
+ +'<div class="trow"><div class="lbl">Elige tus números</div><div class="muted">'+ocu+' de 100 ocupados · quedan '+(100-ocu)+'</div></div><div class="prog"><i style="width:'+ocu+'%"></i></div>'
+ +board('bC',false)+legend()+'<div class="tray" id="tray"></div></div></div>'+foot()}
+function tray(){var t=$('#tray');if(!t)return;var k=Object.keys(S.sel).map(Number).sort(function(a,b){return (a||100)-(b||100)});
+ if(S.cfg.gordo){t.innerHTML='<div class="muted">Venta cerrada. El sorteo ya se ha celebrado.</div>';return}
+ if(!k.length){t.innerHTML='<div class="muted">Toca los números que quieras llevarte. Máximo '+MAX+' por reserva.</div>';return}
+ t.innerHTML='<div class="chips">'+k.map(function(n){return '<b>'+pad(n)+'</b>'}).join('')+'</div><div class="trow"><div><div class="muted">'+k.length+' × '+eur(S.cfg.precio)+'</div><div class="tot">'+eur(k.length*S.cfg.precio)+'</div></div><button class="btn" type="button" id="bRes">Reservar</button></div>'}
+function cd(){var el=$('#cd');if(!el||!S.cfg)return;var ms=Date.parse(S.cfg.fecha)-Date.now();if(isNaN(ms)||ms<0)ms=0;
+ el.innerHTML=[[Math.floor(ms/864e5),'días'],[Math.floor(ms%864e5/36e5),'horas'],[Math.floor(ms%36e5/6e4),'min'],[Math.floor(ms%6e4/1e3),'seg']].map(function(x){return '<div><b>'+pad(x[0])+'</b><span>'+x[1]+'</span></div>'}).join('')}
+
+function viewA(){var tabs=[['n','Números'],['p','Premio y logo'],['s','Sorteo'],['g','Seguridad']];if(TEN==='main')tabs.push(['c','Negocios']);
+ return head('ADMINISTRACIÓN')+'<div class="trow" style="margin-bottom:10px"><div class="muted">Panel de administración</div><button class="btn o sm" type="button" data-a="salir">Salir del admin</button></div><div class="tabs'+(tabs.length>4?' t5':'')+'">'+tabs.map(function(t){return '<button type="button" data-t="'+t[0]+'" class="'+(S.tab===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div><div style="margin-top:14px">'+aBody()+'</div>'+foot()}
+function caduca(x){if(!x.res)return '';var ms=x.res+S.cfg.horas*36e5-Date.now();if(ms<=0)return 'caducada';var h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return 'caduca en '+h+' h '+m+' min'}
+function aBody(){var s=stats(),c=S.cfg,A=S.adm;
+ if(S.tab==='n'){var rows='';ORDER.forEach(function(n){var x=A[n];if(x.e==='libre')return;rows+='<div class="rw"><span class="n">'+pad(n)+'</span><span class="i">'+esc(x.nombre)+' · <a href="https://wa.me/34'+esc(x.tel)+'" target="_blank" rel="noopener" style="color:var(--blue)">'+esc(x.tel)+'</a><small>'+(x.email?esc(x.email)+' · ':'')+(x.e==='pagado'?'pagado'+(x.mail?' · correo enviado':''):'reservado, '+caduca(x))+'</small></span>'+(x.e==='reservado'?'<button class="btn g sm" type="button" data-a="pag" data-n="'+n+'">Pagado</button>':'')+'<button class="btn o sm" type="button" data-a="lib" data-n="'+n+'">Liberar</button></div>'});
+  var ed='';if(S.edit!==null){var x=A[S.edit];ed='<div class="edit"><b>Número '+pad(S.edit)+'</b><div class="row2"><div><label for="eE">Estado</label><select class="in" id="eE"><option value="libre"'+(x.e==='libre'?' selected':'')+'>Libre</option><option value="reservado"'+(x.e==='reservado'?' selected':'')+'>Reservado</option><option value="pagado"'+(x.e==='pagado'?' selected':'')+'>Pagado</option></select></div><div><label for="eN">Nombre</label><input class="in" id="eN" value="'+esc(x.nombre)+'"></div></div><div class="row2"><div><label for="eT">Teléfono</label><input class="in" id="eT" inputmode="tel" value="'+esc(x.tel)+'"></div><div><label for="eM">Correo</label><input class="in" id="eM" type="email" value="'+esc(x.email||'')+'"></div></div><div class="acts"><button class="btn" type="button" data-a="save">Guardar</button><button class="btn o" type="button" data-a="cancel">Cerrar</button></div></div>'}
+  return '<div class="grid2"><div class="colL"><div class="st"><div><b>'+s.l+'</b><span>libres</span></div><div><b>'+s.r+'</b><span>reservados</span></div><div><b>'+s.p+'</b><span>pagados</span></div><div><b>'+eur(s.rec)+'</b><span>recaudado</span></div></div>'+ed+'<div>'+(rows||'<div class="muted">Todavía no hay reservas.</div>')+'</div></div><div class="colR"><div class="muted">Toca un número para cambiarlo.</div>'+board('bA',true)+legend()+'</div></div>'}
+ if(S.tab==='p')return '<div class="grid2"><div class="colL"><div class="sec"><div class="lbl">El regalo</div><label for="fP">Qué regalo es</label><input class="in" id="fP" value="'+esc(c.premio)+'" placeholder="Ej.: Cesta de Navidad, iPhone 16, 200 €"><label for="fD">Detalle (opcional)</label><input class="in" id="fD" value="'+esc(c.detalle)+'" placeholder="Ej.: Se entrega el 23 de diciembre en la tienda"></div><div class="sec"><div class="lbl">Nombre del sorteo</div><label for="fT">Título grande</label><input class="in" id="fT" value="'+esc(c.titulo)+'" placeholder="Gran Sorteo de Navidad"><label for="fN">Nombre que sale en «Serie»</label><input class="in" id="fN" value="'+esc(c.empresa||'')+'" placeholder="FuturMovil"><p class="muted">Ej.: SERIE FUTURMOVIL. Pon el nombre de tu empresa o del sorteo.</p></div><div class="sec"><div class="lbl">Precio</div><div class="row2"><div><label for="fE">Precio de cada número (€)</label><input class="in" id="fE" inputmode="decimal" value="'+String(c.precio).replace('.',',')+'"></div><div><label for="fH">Horas para pagar</label><input class="in" id="fH" inputmode="numeric" value="'+c.horas+'"></div></div><p class="muted">Si un número reservado no se paga en esas horas, vuelve a quedar libre.</p></div><div class="sec"><div class="lbl">Cobro</div><label for="fPg">Enlace de pago (myPOS, PayPal…)</label><input class="in" id="fPg" inputmode="url" value="'+esc(c.pago||'')+'" placeholder="https://mypos.com/@tunegocio"><p class="muted">Si es un enlace de myPOS, se añade el importe solo.</p><label for="fPt">Otras formas de pago (Bizum, transferencia…)</label><textarea class="in" id="fPt" rows="3" placeholder="Bizum al 600 000 000 indicando tu número">'+esc(c.pagoTxt||'')+'</textarea></div><div class="acts"><button class="btn" type="button" data-a="cfg">Guardar cambios</button></div></div><div class="colR"><div class="sec" id="logoBox">'+logoBox()+'</div></div></div>'
+ if(S.tab==='c')return cliH();
+ if(S.tab==='s')return '<div style="max-width:460px;margin:0 auto"><label for="fG">Número del Gordo (5 cifras)</label><input class="in" id="fG" inputmode="numeric" maxlength="5" value="'+esc(c.gordo)+'" placeholder="12345" style="font-size:28px;letter-spacing:.3em;text-align:center"><div class="err" id="gErr"></div><div class="acts"><button class="btn" type="button" data-a="gordo">Publicar el Gordo</button><button class="btn o" type="button" data-a="nogordo">Borrar resultado</button></div><p class="muted">Gana el número de las dos últimas cifras. Al publicarlo se cierra la venta y todos los que tengan la web abierta verán la animación.</p></div>'
+ return '<div class="grid2"><div class="colL"><label for="fW">Nueva contraseña de admin</label><input class="in" id="fW" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><div class="err" id="wErr"></div><div class="acts"><button class="btn" type="button" data-a="pass">Cambiar contraseña</button></div></div><div class="colR"><label for="fR">Reiniciar sorteo: escribe BORRAR</label><input class="in" id="fR" placeholder="BORRAR"><div class="err" id="rErr"></div><div class="acts"><button class="btn o" type="button" data-a="reset" style="border-color:var(--red);color:var(--red)">Vaciar todos los números</button></div></div></div>'}
+
+function render(){if(!S.cfg)return;$('#iT').textContent=S.cfg.titulo;document.title=S.cfg.titulo+(S.cfg.empresa?' · '+S.cfg.empresa:'');setApp(S.cfg.empresa||S.cfg.titulo);$('#pie').textContent=(S.cfg.empresa?S.cfg.empresa+' · ':'')+'Sorteo de Navidad 2026';
+ var y=scrollY;$('#main').innerHTML=S.view==='a'&&S.adm?viewA():viewC();scrollTo(0,y);
+ $('#bAdm').textContent=S.view==='a'?'Ver como cliente':(S.token?'Panel admin':'Admin');tray();cd()}
+function refreshBoard(){var bd=$('#bC');if(bd)bd.outerHTML=board('bC',false);tray()}
+
+/* carga y sondeo */
+function applyEstado(j,first){if(!j||!j.ok)return;var prevG=S.lastGordo;S.cfg=j.cfg;S.n=j.n;S.win=j.win;S.ver=j.ver;
+ Object.keys(S.sel).forEach(function(n){if(S.n[n]!=='libre')delete S.sel[n]});
+ S.lastGordo=S.cfg.gordo;
+ var ae=document.activeElement;if(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select')))render();
+ if(!first&&S.cfg.gordo&&S.cfg.gordo!==prevG){S.sel={};setTimeout(reveal,300)}}
+function load(first){return api('estado').then(function(j){applyEstado(j,first);if(S.view==='a'&&S.token)return loadAdm()}).catch(function(e){if(first)$('#main').innerHTML='<div class="loading">NO SE HA PODIDO CARGAR. REVISA TU CONEXIÓN Y RECARGA LA PÁGINA.</div>'})}
+function loadAdm(force){return api('admin').then(function(j){if(j.ok){S.adm=j.n;S.cfg=j.cfg;var ae=document.activeElement;if(force||(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select'))))render()}else if(force){S.view='c';render();toast(j.error||'No se ha podido abrir el admin')}}).catch(function(e){if(force&&e.message!=='SESION'){S.view='c';render();toast('Sin conexión. Vuelve a intentarlo.')}})}
+setInterval(function(){if(!document.hidden&&$('#ov').hidden)load(false)},15000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)load(false)});
+
+/* diálogos */
+function dlg(h){$('#dlg').className='t';$('#dlg').innerHTML=h;$('#ov').hidden=false}
+function closeDlg(){$('#ov').hidden=true;render()}
+function payUrl(t){var p=String(S.cfg.pago||'').trim().replace(/\/+$/,'');if(!p)return '';return /mypos\.com\/@/i.test(p)?p+'/'+String(Math.round(t*100)/100).replace('.',','):p}
+function payH(t){var u=payUrl(t),x=String(S.cfg.pagoTxt||'').trim(),h='';if(u)h+='<div class="acts"><a class="btn" target="_blank" rel="noopener" href="'+esc(u)+'">Pagar '+eur(t)+'</a></div>';if(x)h+='<div class="tip" style="white-space:pre-line;margin-top:10px"><b>Cómo pagar:</b>\n'+esc(x)+'</div>';if(!h)h='<div class="tip">El organizador te indicará cómo pagar.</div>';return h}
+function reservar(){var k=Object.keys(S.sel).map(Number).sort(function(a,b){return (a||100)-(b||100)});if(!k.length)return;
+ var nm0=ls.get('sorteo_nom',''),tl0=ls.get('sorteo_tel','');
+ dlg('<h3>Reservar números</h3><div class="chips">'+k.map(function(n){return '<b>'+pad(n)+'</b>'}).join('')+'</div><div>Total <b>'+eur(k.length*S.cfg.precio)+'</b></div><form id="fr" novalidate><label for="rN">Tu nombre</label><input class="in" id="rN" autocomplete="name" placeholder="Nombre y apellido" value="'+esc(nm0)+'"><label for="rT">Tu teléfono</label><input class="in" id="rT" inputmode="tel" autocomplete="tel" placeholder="600 000 000" value="'+esc(tl0)+'"><label for="rM">Tu correo</label><input class="in" id="rM" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@gmail.com" value="'+esc(ls.get('sorteo_mail',''))+'"><div class="muted" style="margin-top:4px">Te enviaremos la confirmación cuando recibamos el pago.</div><div class="err" id="rE"></div><div class="acts"><button class="btn" type="submit" id="rOk">Reservar</button><button class="btn o" type="button" id="rC">Cancelar</button></div></form>');
+ $('#rC').onclick=closeDlg;
+ $('#fr').onsubmit=function(e){e.preventDefault();var nm=$('#rN').value.trim(),tl=$('#rT').value.replace(/\D/g,'');
+  if(nm.length<2){$('#rE').textContent='Escribe tu nombre.';Snd.err();return}if(tl.length<9){$('#rE').textContent='Escribe un teléfono de 9 cifras.';Snd.err();return}var em=$('#rM').value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){$('#rE').textContent='Escribe un correo válido.';Snd.err();return}
+  $('#rOk').disabled=true;$('#rOk').textContent='Reservando…';S.busy=true;
+  api('reservar',{nums:k,nombre:nm,tel:tl,email:em}).then(function(j){S.busy=false;
+   if(!j.ok){$('#rE').textContent=j.error;$('#rOk').disabled=false;$('#rOk').textContent='Reservar';Snd.err();if(j.ocupados){j.ocupados.forEach(function(n){delete S.sel[n]});load(false)}return}
+   ls.set('sorteo_nom',nm);ls.set('sorteo_tel',tl);ls.set('sorteo_mail',em);
+   j.nums.forEach(function(n){S.mios[n]=1;S.n[n]='reservado'});ls.set('sorteo_mios',S.mios);S.sel={};
+   Snd.ok();Conf.burst(innerWidth/2,innerHeight/3,90);
+   dlg('<h3>Reservado</h3><div class="chips">'+j.nums.map(function(n){return '<b>'+pad(n)+'</b>'}).join('')+'</div><p>Tienes '+j.horas+' horas para pagar <b>'+eur(j.total)+'</b>. Si no se paga en ese plazo, los números vuelven a quedar libres. Cuando recibamos el pago, pasan a vendidos y te llegará un correo de confirmación a <b>'+esc(em)+'</b>.</p>'+payH(j.total)+'<div class="acts"><button class="btn o" type="button" id="rK">Cerrar</button></div>');$('#rK').onclick=closeDlg;load(false)
+  }).catch(function(){S.busy=false;$('#rE').textContent='No se ha podido reservar. Revisa tu conexión y vuelve a intentarlo.';$('#rOk').disabled=false;$('#rOk').textContent='Reservar';Snd.err()})}}
+
+var revT=[];
+function clearRev(){revT.forEach(function(t){clearTimeout(t);clearInterval(t)});revT=[]}
+function reveal(){var g=S.cfg.gordo;if(!g)return;clearRev();Snd.init();
+ dlg('<h3 style="text-align:center">El Gordo de Navidad</h3><div class="digs" id="dgs">'+g.split('').map(function(d,i){return '<div class="dg'+(i>=3?' fin':'')+'">?</div>'}).join('')+'</div><p id="rt" style="text-align:center">Sorteando…</p><div id="rw" style="text-align:center"></div><div class="acts"><button class="btn o" type="button" id="rS">Saltar</button><button class="btn" type="button" id="rX" hidden>Cerrar</button></div>');
+ var sp=[].slice.call(document.querySelectorAll('#dgs .dg'));
+ function fin(){clearRev();sp.forEach(function(s,i){s.textContent=g[i];s.classList.add('stop')});var w=S.win,t=$('#rt');if(!t||!w)return;t.textContent='Terminación '+pad(w.n);
+  $('#rw').innerHTML='<div class="gordo">'+pad(w.n)+'</div><p>'+winText()+(w.e==='pagado'?' Premio: '+esc(S.cfg.premio):'')+(S.mios[w.n]?'<br><b>¡Es tu número!</b>':'')+'</p>';$('#rS').hidden=true;$('#rX').hidden=false;$('#rX').onclick=closeDlg;
+  if(w.e!=='libre'){Snd.fanfare();Conf.burst(innerWidth*.25,innerHeight*.4,80);setTimeout(function(){Conf.burst(innerWidth*.75,innerHeight*.4,80)},350)}else Snd.err()}
+ sp.forEach(function(s,i){var iv=setInterval(function(){s.textContent=Math.floor(Math.random()*10);Snd.tick()},75);revT.push(iv);revT.push(setTimeout(function(){clearInterval(iv);s.textContent=g[i];s.classList.add('stop');Snd.stopDigit(i>=3);if(i===sp.length-1)revT.push(setTimeout(fin,700))},1300+i*750))});
+ $('#rS').onclick=fin}
+
+/* admin */
+function newPassDlg(){dlg('<h3>Crea tu contraseña</h3><p>Estás entrando con una contraseña temporal. Elige la tuya para entrar a partir de ahora.</p><form id="fnp" novalidate><label for="np1">Nueva contraseña</label><input class="in" id="np1" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><label for="np2">Repítela</label><input class="in" id="np2" type="password" autocomplete="new-password"><div class="err" id="npE"></div><div class="acts"><button class="btn" type="submit" id="npOk">Guardar y entrar</button></div></form>');
+ $('#fnp').onsubmit=function(e){e.preventDefault();var a=$('#np1').value,b=$('#np2').value;if(a.length<6){$('#npE').textContent='Mínimo 6 caracteres.';return}if(a!==b){$('#npE').textContent='Las dos contraseñas no coinciden.';return}
+  $('#npOk').disabled=true;api('setPass',{nueva:a}).then(function(j){if(!j.ok){$('#npE').textContent=j.error;$('#npOk').disabled=false;return}
+   Snd.ok();toast('Contraseña guardada');S.view='a';if(document.activeElement)document.activeElement.blur();$('#ov').hidden=true;$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm(true)}).catch(function(){$('#npE').textContent='Sin conexión.';$('#npOk').disabled=false})}}
+function loginDlg(){dlg('<h3>Menú de admin</h3><form id="fl" novalidate><label for="lP">Contraseña</label><input class="in" id="lP" type="password" autocomplete="current-password"><div class="err" id="lE"></div><div class="acts"><button class="btn" type="submit" id="lOk">Entrar</button><button class="btn o" type="button" id="lC">Cancelar</button></div></form><p style="text-align:center;margin:12px 0 0"><button type="button" class="lnk" id="lF">He olvidado la contraseña</button></p>');
+ $('#lF').onclick=function(){var b=this;b.disabled=true;b.textContent='Enviando…';api('recuperar').then(function(j){if(j.ok){$('#lE').style.color='var(--holly)';$('#lE').textContent='Te hemos enviado una contraseña temporal a '+j.email+'. Revisa también Spam.';b.textContent='Enviada'}else{$('#lE').textContent=j.error;b.disabled=false;b.textContent='He olvidado la contraseña'}}).catch(function(){$('#lE').textContent='Sin conexión.';b.disabled=false;b.textContent='He olvidado la contraseña'})};
+ $('#lC').onclick=closeDlg;setTimeout(function(){$('#lP').focus()},50);
+ $('#fl').onsubmit=function(e){e.preventDefault();$('#lOk').disabled=true;
+  api('login',{pass:$('#lP').value}).then(function(j){if(!j.ok){$('#lE').textContent=j.error;$('#lOk').disabled=false;Snd.err();return}
+   S.token=j.token;ls.set('sorteo_tok',j.token);if(j.mustChange){newPassDlg();return}S.view='a';Snd.ok();if(document.activeElement)document.activeElement.blur();$('#ov').hidden=true;$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm(true)}).catch(function(){$('#lE').textContent='Sin conexión. Inténtalo otra vez.';$('#lOk').disabled=false})}}
+function adm(action,data,msg){S.busy=true;return api(action,data).then(function(j){S.busy=false;if(!j.ok){toast(j.error);Snd.err();return j}
+ if(j.n){S.adm=j.n;S.cfg=j.cfg}S.edit=null;if(msg){toast(j.aviso?msg+'. '+j.aviso:msg);Snd.ok()}render();load(false);return j}).catch(function(e){S.busy=false;if(e.message!=='SESION'){toast('Sin conexión. No se ha guardado.');Snd.err()}})}
+
+document.addEventListener('click',function(e){var t=e.target;
+ var b=t.closest('.b');if(b&&b.parentNode.id==='bC'){var n=Number(b.dataset.n);if(S.cfg.gordo)return;if(st(n)!=='libre'){Snd.err();toast(S.mios[n]?'Este número ya es tuyo':'El '+pad(n)+' ya está cogido');return}if(S.sel[n]){delete S.sel[n];Snd.unpick()}else{if(Object.keys(S.sel).length>=MAX){toast('Máximo '+MAX+' números por reserva');Snd.err();return}S.sel[n]=1;Snd.pick(Object.keys(S.sel).length)}refreshBoard();return}
+ if(b&&b.parentNode.id==='bA'){S.edit=Number(b.dataset.n);Snd.click();render();var ed=$('.edit');if(ed)ed.scrollIntoView({block:'center',behavior:'smooth'});return}
+ if(t.id==='bRes'){Snd.click();reservar();return}
+ if(t.id==='bRev'){reveal();return}
+ var tb=t.closest('.tabs button');if(tb){S.tab=tb.dataset.t;S.edit=null;S.lp=null;Snd.click();render();if(S.tab==='c')loadCli();return}
+ var a=t.dataset&&t.dataset.a;if(!a)return;var n2=Number(t.dataset.n);
+ if(a==='pag')adm('setNum',{n:n2,e:'pagado'},'Número '+pad(n2)+' pagado');
+ else if(a==='lib')adm('setNum',{n:n2,e:'libre'},'Número '+pad(n2)+' liberado');
+ else if(a==='cancel'){S.edit=null;render()}
+ else if(a==='save'){var nn=S.edit;adm('setNum',{n:nn,e:$('#eE').value,nombre:$('#eN').value.trim()||'Sin nombre',tel:$('#eT').value,email:$('#eM').value.trim()},'Número '+pad(nn)+' actualizado')}
+ else if(a==='cfg'){var pr=Number($('#fE').value.replace(',','.')),hh=parseInt($('#fH').value,10);if(!(pr>=0)){toast('Escribe un precio válido');Snd.err();return}if(!(hh>0)){toast('Escribe las horas para pagar');Snd.err();return}
+  adm('setCfg',{titulo:$('#fT').value.trim()||S.cfg.titulo,empresa:$('#fN').value.trim(),premio:$('#fP').value.trim()||S.cfg.premio,detalle:$('#fD').value.trim(),precio:pr,horas:hh,pago:$('#fPg').value.trim(),pagoTxt:$('#fPt').value.trim()},'Cambios guardados')}
+ else if(a==='nologo')adm('setCfg',{logo:''},'Logo quitado');
+ else if(a==='gordo'){var g=$('#fG').value.replace(/\D/g,'');if(!g){$('#gErr').textContent='Escribe las cifras del Gordo.';Snd.err();return}while(g.length<5)g='0'+g;
+  adm('setGordo',{gordo:g}).then(function(j){if(j&&j.ok)return api('estado').then(function(x){applyEstado(x,true);S.view='c';render();reveal()})})}
+ else if(a==='nogordo')adm('setGordo',{gordo:''},'Resultado borrado');
+ else if(a==='pass'){var pw=$('#fW').value;if(pw.length<6){$('#wErr').textContent='Mínimo 6 caracteres.';Snd.err();return}adm('setPass',{nueva:pw}).then(function(j){if(j&&j.ok){toast('Contraseña cambiada');Snd.ok()}})}
+ else if(a==='reset'){if($('#fR').value!=='BORRAR'){$('#rErr').textContent='Escribe BORRAR para confirmar.';Snd.err();return}adm('reset',{confirm:'BORRAR'},'Sorteo reiniciado')}
+ else if(a==='salir'){api('logout').catch(function(){});S.token='';ls.set('sorteo_tok','');S.view='c';S.adm=null;render()}
+});
+
+/* logo: se elige de la galería, se revisa el tamaño y se ajusta a un cuadrado */
+var LOGO_PX=256;
+function logoBox(){var c=S.cfg,L=S.lp;
+ var h='<div class="lbl">Logo de tu empresa</div><div class="tip"><b>Tamaño recomendado:</b> imagen cuadrada de <b>500 × 500 px</b> (mínimo 200 × 200), en PNG con fondo transparente o blanco. Si no es cuadrada, aquí mismo eliges cómo ajustarla.</div>';
+ if(!L){h+='<div class="lgrow"><div class="logo big">'+(c.logo?logoH():'<div class="ph-size"><b>500 × 500</b>píxeles</div>')+'</div><div class="lgbtns"><label class="btn" style="margin:0;cursor:pointer">'+(c.logo?'Cambiar logo':'Elegir imagen de la galería')+'<input type="file" id="fF" accept="image/*" hidden></label>'+(c.logo?'<button class="btn o sm" type="button" data-a="nologo">Quitar logo</button>':'')+'</div></div><p class="muted">Se ve arriba del décimo, al lado del título.</p>';return h}
+ var sq=Math.max(L.w,L.h)/Math.min(L.w,L.h)<1.15,small=Math.min(L.w,L.h)<200,msg,cls;
+ if(small){msg='Tu imagen mide '+L.w+' × '+L.h+' px. Es pequeña y puede verse borrosa. Mejor una de 500 × 500 px.';cls='warn'}
+ else if(!sq){msg='Tu imagen mide '+L.w+' × '+L.h+' px. No es cuadrada: elige si quieres verla entera o recortada al centro.';cls='warn'}
+ else{msg='Tu imagen mide '+L.w+' × '+L.h+' px. Tamaño perfecto.';cls='okk'}
+ h+='<div class="'+cls+'">'+msg+'</div><div class="lgrow"><div class="logo big"><img alt="Vista previa del logo" src="'+L.out+'"></div><div class="lgbtns">'
+  +(sq?'':'<div class="modes"><button type="button" data-a="lpmode" data-m="fit" class="'+(L.mode==='fit'?'on':'')+'">Entera</button><button type="button" data-a="lpmode" data-m="crop" class="'+(L.mode==='crop'?'on':'')+'">Recortada</button></div>')
+  +'<button class="btn" type="button" data-a="lpsave">Guardar este logo</button><button class="btn o sm" type="button" data-a="lpcancel">Cancelar</button></div></div><p class="muted">Así se verá en el décimo.</p>';
+ return h}
+function updLogoBox(){var b=$('#logoBox');if(b)b.innerHTML=logoBox()}
+function makeLogo(){var L=S.lp,im=L.img,cv=document.createElement('canvas'),x=cv.getContext('2d'),sizes=[LOGO_PX,200,160,128],out='';
+ for(var i=0;i<sizes.length;i++){var P=sizes[i];cv.width=cv.height=P;x.clearRect(0,0,P,P);
+  var k=L.mode==='crop'?Math.max(P/im.width,P/im.height):Math.min(P/im.width,P/im.height),w=im.width*k,h=im.height*k;
+  x.drawImage(im,(P-w)/2,(P-h)/2,w,h);out=cv.toDataURL('image/png');if(out.length<45000)break;
+  var wb=cv.toDataURL('image/webp',.85);if(wb.indexOf('data:image/webp')===0&&wb.length<45000){out=wb;break}
+  var c2=document.createElement('canvas');c2.width=c2.height=P;var y=c2.getContext('2d');y.fillStyle='#fff';y.fillRect(0,0,P,P);y.drawImage(cv,0,0);out=c2.toDataURL('image/jpeg',.85);if(out.length<45000)break}
+ L.out=out;L.ok=out.length<45000}
+document.addEventListener('change',function(e){if(e.target.id!=='fF'||!e.target.files[0])return;var f=e.target.files[0],r=new FileReader();
+ r.onload=function(){var im=new Image();im.onload=function(){var sq=Math.max(im.width,im.height)/Math.min(im.width,im.height)<1.15;S.lp={img:im,w:im.width,h:im.height,mode:sq?'crop':'fit'};makeLogo();updLogoBox()};im.onerror=function(){toast('No se puede leer esa imagen. Prueba con una foto JPG o PNG.')};im.src=r.result};r.readAsDataURL(f)});
+document.addEventListener('click',function(e){var t=e.target.closest('[data-a]');if(!t)return;var a=t.dataset.a;
+ if(a==='lpmode'){S.lp.mode=t.dataset.m;makeLogo();updLogoBox();Snd.click()}
+ else if(a==='lpcancel'){S.lp=null;updLogoBox()}
+ else if(a==='lpsave'){if(!S.lp.ok){toast('No se ha podido reducir la imagen. Prueba con otra.');return}var out=S.lp.out;t.disabled=true;t.textContent='Guardando…';adm('setCfg',{logo:out},'Logo guardado').then(function(){S.lp=null;updLogoBox()})}
+});
+
+/* negocios clientes (solo el panel principal) */
+function fdate(t){if(!t)return '';var d=new Date(t);return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()}
+function cliH(){var L=S.cli,h='<div class="grid2"><div class="colL"><div class="sec"><div class="lbl">Crear panel para un negocio</div><p class="muted" style="margin:0 0 4px">Se crea su propia web de sorteo y le llega un correo con la dirección y una contraseña temporal para entrar en su admin.</p><label for="cN">Nombre del negocio</label><input class="in" id="cN" placeholder="Ej.: Panadería Lola"><label for="cE">Correo del negocio</label><input class="in" id="cE" type="email" inputmode="email" placeholder="negocio@gmail.com"><div class="err" id="cErr"></div><div class="acts"><button class="btn" type="button" id="cOk">Crear y enviar acceso</button></div></div></div><div class="colR"><div class="lbl">Negocios ('+(L?L.length:'…')+')</div>';
+ if(!L)h+='<div class="loading" style="padding:30px 0">CARGANDO <i></i><i></i><i></i></div>';
+ else if(!L.length)h+='<div class="muted">Todavía no has creado ningún panel. Rellena el formulario para crear el primero.</div>';
+ else h+=L.map(function(c){return '<div class="cli'+(c.activo?'':' off')+'"><div class="trow"><b>'+esc(c.negocio)+'</b><span class="pill'+(c.activo?'':' no')+'">'+(c.activo?'Activo':'Desactivado')+'</span></div><div class="muted">'+esc(c.email)+' · creado '+fdate(c.creado)+(c.temp?' · aún no ha entrado':'')+'</div><div class="muted">'+c.vendidos+' vendidos · '+c.reservados+' reservados</div><div class="url"><a href="'+esc(c.web)+'" target="_blank" rel="noopener">'+esc(c.web.replace(/^https:\/\//,''))+'</a></div><div class="acts"><button class="btn o sm" type="button" data-c="copy" data-id="'+esc(c.id)+'">Copiar enlace</button><button class="btn o sm" type="button" data-c="mail" data-id="'+esc(c.id)+'">Reenviar acceso</button><button class="btn o sm" type="button" data-c="'+(c.activo?'off':'on')+'" data-id="'+esc(c.id)+'">'+(c.activo?'Desactivar':'Activar')+'</button></div></div>'}).join('');
+ return h+'</div></div>'}
+function loadCli(){api('clientes').then(function(j){if(j.ok){S.cli=j.clientes;if(S.view==='a'&&S.tab==='c')render()}}).catch(function(){})}
+function cliRes(j,b,txt){if(b){b.disabled=false;if(txt)b.textContent=txt}if(!j.ok){toast(j.error);Snd.err();return false}S.cli=j.clientes;render();if(j.aviso)toast(j.aviso);Snd.ok();return true}
+document.addEventListener('click',function(e){var t=e.target;
+ if(t.id==='cOk'){var n=$('#cN').value.trim(),m=$('#cE').value.trim();if(n.length<2){$('#cErr').textContent='Escribe el nombre del negocio.';return}if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)){$('#cErr').textContent='Escribe un correo válido.';return}
+  t.disabled=true;t.textContent='Creando…';api('crearCliente',{negocio:n,email:m}).then(function(j){if(!cliRes(j,t,'Crear y enviar acceso'))return;var nv=j.nuevo;
+   dlg('<h3>Panel creado</h3><p><b>'+esc(n)+'</b> ya tiene su sorteo. '+esc(j.aviso)+'.</p><div class="tip"><b>Web:</b> <a href="'+esc(nv.web)+'" target="_blank" rel="noopener" style="word-break:break-all">'+esc(nv.web)+'</a><br><b>Contraseña temporal:</b> <span style="font-size:18px;letter-spacing:2px">'+esc(nv.pass)+'</span></div><div class="acts"><a class="btn g" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent('Hola, ya tienes tu sorteo de Navidad: '+nv.web+'\nPara entrar en tu admin pulsa Admin y usa esta contraseña temporal: '+nv.pass)+'">Enviar también por WhatsApp</a></div><div class="acts"><button class="btn o" type="button" id="cK">Cerrar</button></div>');$('#cK').onclick=closeDlg}).catch(function(){t.disabled=false;t.textContent='Crear y enviar acceso';toast('Sin conexión. No se ha creado.')});return}
+ var c=t.closest('[data-c]');if(!c)return;var id=c.dataset.id,k=c.dataset.c,cl=(S.cli||[]).filter(function(x){return x.id===id})[0];if(!cl)return;
+ if(k==='copy'){(navigator.clipboard?navigator.clipboard.writeText(cl.web):Promise.reject()).then(function(){toast('Enlace copiado')}).catch(function(){prompt('Copia el enlace',cl.web)});return}
+ var old=c.textContent;c.disabled=true;c.textContent='…';
+ var pr=k==='mail'?api('reenviar',{id:id}):api('activar',{id:id,on:k==='on'});pr.then(function(j){cliRes(j,c,old)}).catch(function(){c.disabled=false;c.textContent=old;toast('Sin conexión.')})});
+
+/* botones superiores */
+$('#bAdm').onclick=function(){Snd.click();if(S.view==='a'){S.view='c';render();return}if(S.token){S.view='a';$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm(true);return}loginDlg()};
+function btns(){$('#bSfx').className='ib'+(Snd.sfx?'':' off');$('#bMus').className='ib'+(Snd.music?'':' off')}
+$('#bSfx').onclick=function(){Snd.setSfx(!Snd.sfx);btns();if(Snd.sfx)Snd.click()};
+$('#bMus').onclick=function(){Snd.init();Snd.setMusic(!Snd.music);btns()};
+$('#iGo').onclick=function(){Snd.init();if(!Snd.sfx)Snd.setSfx(true);if(!Snd.music)Snd.setMusic(true);btns();Snd.jingle();Snd.start();closeDlg()};
+$('#iNo').onclick=function(){Snd.setSfx(false);Snd.setMusic(false);btns();closeDlg()};
+btns();
+
+/* instalar y compartir */
+var defer=null,isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+if(standalone)$('#bInst').hidden=true;
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();defer=e});
+addEventListener('appinstalled',function(){$('#bInst').hidden=true;toast('App instalada')});
+$('#bInst').onclick=function(){Snd.click();if(defer){defer.prompt();defer.userChoice.then(function(){defer=null});return}
+ if(isIOS)dlg('<h3>Instalar en iPhone</h3><div class="ios"><p>1. Abre esta página en <b>Safari</b>.</p><p>2. Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba).</p><p>3. Elige <b>Añadir a pantalla de inicio</b> y toca <b>Añadir</b>.</p></div><div class="acts"><button class="btn" type="button" id="iK">Entendido</button></div>');
+ else dlg('<h3>Instalar la app</h3><div class="ios"><p>Abre el menú del navegador (los tres puntos) y elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</p></div><div class="acts"><button class="btn" type="button" id="iK">Entendido</button></div>');
+ $('#iK').onclick=closeDlg};
+$('#bShare').onclick=function(){Snd.click();var url=HOME,txt='Participa en el '+(S.cfg?S.cfg.titulo:'Sorteo de Navidad')+(S.cfg&&S.cfg.empresa?' de '+S.cfg.empresa:'')+'. Elige tu número del 01 al 00:';
+ if(navigator.share){navigator.share({title:document.title,text:txt,url:url}).catch(function(){});return}
+ dlg('<h3>Compartir</h3><div class="share"><a target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(txt+' '+url)+'">WhatsApp</a><a target="_blank" rel="noopener" href="https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(txt)+'">Telegram</a><a href="mailto:?subject='+encodeURIComponent(document.title)+'&body='+encodeURIComponent(txt+' '+url)+'">Correo</a><button type="button" id="sCp">Copiar enlace</button></div><div class="acts"><button class="btn o" type="button" id="sK">Cerrar</button></div>');
+ $('#sK').onclick=closeDlg;$('#sCp').onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){toast('Enlace copiado')}).catch(function(){prompt('Copia el enlace',url)})}};
+
+if('serviceWorker' in navigator){var hadSW=!!navigator.serviceWorker.controller;navigator.serviceWorker.register(BASE+'sw.js',{scope:BASE,updateViaCache:'none'}).then(function(r){r.update()}).catch(function(){});navigator.serviceWorker.addEventListener('controllerchange',function(){if(hadSW&&!window._rl){window._rl=1;location.reload()}})}
+setInterval(cd,1000);
+load(true);
+})();
+</script>
+</body>
+</html>
