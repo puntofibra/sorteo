@@ -176,6 +176,7 @@ select.in option{background:#fff;color:var(--ink)}
 .cli .acts{margin-top:6px}.cli .acts .btn{flex:1 1 auto}
 .pill{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--holly);color:#fff;padding:1px 8px}
 .pill.no{background:var(--muted)}
+.cli .btn.del{border-color:var(--red);color:var(--red)}
 textarea.in{resize:vertical;font:inherit}
 .sec{border:2px solid var(--ink);padding:12px;display:grid;gap:2px;background:var(--paper2)}
 .sec .lbl{color:var(--red);margin-bottom:2px}
@@ -215,7 +216,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v6</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v7</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -472,7 +473,7 @@ function fdate(t){if(!t)return '';var d=new Date(t);return pad(d.getDate())+'/'+
 function cliH(){var L=S.cli,h='<div class="grid2"><div class="colL"><div class="sec"><div class="lbl">Crear panel para un negocio</div><p class="muted" style="margin:0 0 4px">Se crea su propia web de sorteo y le llega un correo con la dirección y una contraseña temporal para entrar en su admin.</p><label for="cN">Nombre del negocio</label><input class="in" id="cN" placeholder="Ej.: Panadería Lola"><label for="cE">Correo del negocio</label><input class="in" id="cE" type="email" inputmode="email" placeholder="negocio@gmail.com"><div class="err" id="cErr"></div><div class="acts"><button class="btn" type="button" id="cOk">Crear y enviar acceso</button></div></div></div><div class="colR"><div class="lbl">Negocios ('+(L?L.length:'…')+')</div>';
  if(!L)h+='<div class="loading" style="padding:30px 0">CARGANDO <i></i><i></i><i></i></div>';
  else if(!L.length)h+='<div class="muted">Todavía no has creado ningún panel. Rellena el formulario para crear el primero.</div>';
- else h+=L.map(function(c){return '<div class="cli'+(c.activo?'':' off')+'"><div class="trow"><b>'+esc(c.negocio)+'</b><span class="pill'+(c.activo?'':' no')+'">'+(c.activo?'Activo':'Desactivado')+'</span></div><div class="muted">'+esc(c.email)+' · creado '+fdate(c.creado)+(c.temp?' · aún no ha entrado':'')+'</div><div class="muted">'+c.vendidos+' vendidos · '+c.reservados+' reservados</div><div class="url"><a href="'+esc(c.web)+'" target="_blank" rel="noopener">'+esc(c.web.replace(/^https:\/\//,''))+'</a></div><div class="acts"><button class="btn o sm" type="button" data-c="copy" data-id="'+esc(c.id)+'">Copiar enlace</button><button class="btn o sm" type="button" data-c="mail" data-id="'+esc(c.id)+'">Reenviar acceso</button><button class="btn o sm" type="button" data-c="'+(c.activo?'off':'on')+'" data-id="'+esc(c.id)+'">'+(c.activo?'Desactivar':'Activar')+'</button></div></div>'}).join('');
+ else h+=L.map(function(c){return '<div class="cli'+(c.activo?'':' off')+'"><div class="trow"><b>'+esc(c.negocio)+'</b><span class="pill'+(c.activo?'':' no')+'">'+(c.activo?'Activo':'Desactivado')+'</span></div><div class="muted">'+esc(c.email)+' · creado '+fdate(c.creado)+(c.temp?' · aún no ha entrado':'')+'</div><div class="muted">'+c.vendidos+' vendidos · '+c.reservados+' reservados</div><div class="url"><a href="'+esc(c.web)+'" target="_blank" rel="noopener">'+esc(c.web.replace(/^https:\/\//,''))+'</a></div><div class="acts"><button class="btn o sm" type="button" data-c="copy" data-id="'+esc(c.id)+'">Copiar enlace</button><button class="btn o sm" type="button" data-c="mail" data-id="'+esc(c.id)+'">Reenviar acceso</button><button class="btn o sm" type="button" data-c="'+(c.activo?'off':'on')+'" data-id="'+esc(c.id)+'">'+(c.activo?'Desactivar':'Activar')+'</button><button class="btn o sm del" type="button" data-c="del" data-id="'+esc(c.id)+'">Eliminar</button></div></div>'}).join('');
  return h+'</div></div>'}
 function loadCli(){api('clientes').then(function(j){if(j.ok){S.cli=j.clientes;if(S.view==='a'&&S.tab==='c')render()}}).catch(function(){})}
 function cliRes(j,b,txt){if(b){b.disabled=false;if(txt)b.textContent=txt}if(!j.ok){toast(j.error);Snd.err();return false}S.cli=j.clientes;render();if(j.aviso)toast(j.aviso);Snd.ok();return true}
@@ -481,6 +482,10 @@ document.addEventListener('click',function(e){var t=e.target;
   t.disabled=true;t.textContent='Creando…';api('crearCliente',{negocio:n,email:m}).then(function(j){if(!cliRes(j,t,'Crear y enviar acceso'))return;var nv=j.nuevo;
    dlg('<h3>Panel creado</h3><p><b>'+esc(n)+'</b> ya tiene su sorteo. '+esc(j.aviso)+'.</p><div class="tip"><b>Web:</b> <a href="'+esc(nv.web)+'" target="_blank" rel="noopener" style="word-break:break-all">'+esc(nv.web)+'</a><br><b>Contraseña temporal:</b> <span style="font-size:18px;letter-spacing:2px">'+esc(nv.pass)+'</span></div><div class="acts"><a class="btn g" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent('Hola, ya tienes tu sorteo de Navidad: '+nv.web+'\nPara entrar en tu admin pulsa Admin y usa esta contraseña temporal: '+nv.pass)+'">Enviar también por WhatsApp</a></div><div class="acts"><button class="btn o" type="button" id="cK">Cerrar</button></div>');$('#cK').onclick=closeDlg}).catch(function(){t.disabled=false;t.textContent='Crear y enviar acceso';toast('Sin conexión. No se ha creado.')});return}
  var c=t.closest('[data-c]');if(!c)return;var id=c.dataset.id,k=c.dataset.c,cl=(S.cli||[]).filter(function(x){return x.id===id})[0];if(!cl)return;
+ if(k==='del'){dlg('<h3>Eliminar negocio</h3><p>Vas a eliminar <b>'+esc(cl.negocio)+'</b> y todo su sorteo: sus números, reservas, compradores y configuración. Su web dejará de funcionar.</p><p><b>No se puede deshacer.</b></p><label for="dC">Para confirmar, escribe ELIMINAR</label><input class="in" id="dC" autocomplete="off" placeholder="ELIMINAR"><div class="err" id="dE"></div><div class="acts"><button class="btn" type="button" id="dOk" style="background:var(--red)">Eliminar definitivamente</button><button class="btn o" type="button" id="dNo">Cancelar</button></div>');
+  $('#dNo').onclick=closeDlg;setTimeout(function(){$('#dC').focus()},50);
+  $('#dOk').onclick=function(){var b=this;if($('#dC').value.trim().toUpperCase()!=='ELIMINAR'){$('#dE').textContent='Escribe ELIMINAR para confirmar.';Snd.err();return}
+   b.disabled=true;b.textContent='Eliminando…';api('borrar',{id:id,confirm:'ELIMINAR'}).then(function(j){if(!j.ok){$('#dE').textContent=j.error;b.disabled=false;b.textContent='Eliminar definitivamente';return}$('#ov').hidden=true;cliRes(j)}).catch(function(){$('#dE').textContent='Sin conexión. No se ha eliminado.';b.disabled=false;b.textContent='Eliminar definitivamente'})};return}
  if(k==='copy'){(navigator.clipboard?navigator.clipboard.writeText(cl.web):Promise.reject()).then(function(){toast('Enlace copiado')}).catch(function(){prompt('Copia el enlace',cl.web)});return}
  var old=c.textContent;c.disabled=true;c.textContent='…';
  var pr=k==='mail'?api('reenviar',{id:id}):api('activar',{id:id,on:k==='on'});pr.then(function(j){cliRes(j,c,old)}).catch(function(){c.disabled=false;c.textContent=old;toast('Sin conexión.')})});
