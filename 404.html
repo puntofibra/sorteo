@@ -218,7 +218,7 @@ textarea.in{resize:vertical;font:inherit}
 <p class="demo" id="pie">Sorteo de Navidad 2026</p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
-  <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22·XII·2026</span></div>
+  <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
   <div class="big" id="iT">Gran Sorteo de Navidad</div>
   <p>100 números, del 01 al 00. Si tu número termina igual que el Gordo, te llevas el premio.</p>
   <div class="acts"><button class="btn" id="iGo" type="button">Entrar con sonido</button><button class="btn o" id="iNo" type="button">Sin sonido</button></div>
@@ -313,7 +313,7 @@ function board(id,adm){var h='',w=winNum();ORDER.forEach(function(n){var e=st(n)
  h+='<button type="button" class="'+c+'" data-n="'+n+'" title="'+esc(tt)+'" aria-label="Número '+pad(n)+(e!=='libre'?', '+e:'')+'">'+pad(n)+'</button>'});
  return '<div class="board" id="'+id+'">'+h+'</div>'}
 function legend(){return '<div class="lgd"><span><i style="border:1px solid var(--ink);background:var(--paper2)"></i>Libre</span><span><i style="border:2px dashed var(--blue)"></i>Reservado</span><span><i style="background:repeating-linear-gradient(-45deg,var(--paperdk) 0 2px,var(--paper) 2px 4px);border:1px solid #9bb0a4"></i>Vendido</span>'+(Object.keys(S.mios).length&&S.view==='c'?'<span><i style="border-radius:50%;background:var(--holly);width:8px;height:8px"></i>Tus números</span>':'')+'</div>'}
-function head(sub){return '<div class="tline"><span>LOTERÍA DE NAVIDAD · '+sub+'</span><span>22·XII·2026</span></div><div class="head"><div class="logo">'+logoH()+'</div><h1>'+esc(S.cfg.titulo)+'</h1></div><p class="rng">NÚMEROS 01 AL 00 · SERIE '+esc(String(S.cfg.empresa||'FuturMovil').toUpperCase())+'</p>'}
+function head(sub){return '<div class="tline"><span>LOTERÍA DE NAVIDAD · '+sub+'</span><span>22/12/2026</span></div><div class="head"><div class="logo">'+logoH()+'</div><h1>'+esc(S.cfg.titulo)+'</h1></div><p class="rng">NÚMEROS 01 AL 00 · SERIE '+esc(String(S.cfg.empresa||'FuturMovil').toUpperCase())+'</p>'}
 function foot(){return '<div class="bars" aria-hidden="true"></div><div class="foot"><span>Gana la terminación del Gordo</span><span>'+eur(S.cfg.precio)+' por número</span></div>'}
 
 function winText(){var w=S.win;if(!w)return '';return w.e==='pagado'?'Gana '+esc(w.nombre)+'. Enhorabuena.':w.e==='reservado'?'El '+pad(w.n)+' está reservado y sin pagar.':'El '+pad(w.n)+' no se vendió. Sorteo desierto.'}
