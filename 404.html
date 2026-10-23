@@ -215,7 +215,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v5</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v6</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -347,7 +347,7 @@ function aBody(){var s=stats(),c=S.cfg,A=S.adm;
  if(S.tab==='s')return '<div style="max-width:460px;margin:0 auto"><label for="fG">Número del Gordo (5 cifras)</label><input class="in" id="fG" inputmode="numeric" maxlength="5" value="'+esc(c.gordo)+'" placeholder="12345" style="font-size:28px;letter-spacing:.3em;text-align:center"><div class="err" id="gErr"></div><div class="acts"><button class="btn" type="button" data-a="gordo">Publicar el Gordo</button><button class="btn o" type="button" data-a="nogordo">Borrar resultado</button></div><p class="muted">Gana el número de las dos últimas cifras. Al publicarlo se cierra la venta y todos los que tengan la web abierta verán la animación.</p></div>'
  return '<div class="grid2"><div class="colL"><label for="fW">Nueva contraseña de admin</label><input class="in" id="fW" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><div class="err" id="wErr"></div><div class="acts"><button class="btn" type="button" data-a="pass">Cambiar contraseña</button></div></div><div class="colR"><label for="fR">Reiniciar sorteo: escribe BORRAR</label><input class="in" id="fR" placeholder="BORRAR"><div class="err" id="rErr"></div><div class="acts"><button class="btn o" type="button" data-a="reset" style="border-color:var(--red);color:var(--red)">Vaciar todos los números</button></div></div></div>'}
 
-function render(){if(!S.cfg)return;$('#iT').textContent=S.cfg.titulo;document.title=S.cfg.titulo+(S.cfg.empresa?' · '+S.cfg.empresa:'');setApp(S.cfg.empresa||S.cfg.titulo);$('#pie').textContent=(S.cfg.empresa?S.cfg.empresa+' · ':'')+'Sorteo de Navidad 2026';
+function render(){if(!S.cfg)return;var iT=$('#iT');if(iT)iT.textContent=S.cfg.titulo;document.title=S.cfg.titulo+(S.cfg.empresa?' · '+S.cfg.empresa:'');setApp(S.cfg.empresa||S.cfg.titulo);$('#pie').textContent=(S.cfg.empresa?S.cfg.empresa+' · ':'')+'Sorteo de Navidad 2026';
  var y=scrollY;$('#main').innerHTML=S.view==='a'&&S.adm?viewA():viewC();scrollTo(0,y);
  $('#bAdm').textContent=S.view==='a'?'Ver como cliente':(S.token?'Panel admin':'Admin');tray();cd()}
 function refreshBoard(){var bd=$('#bC');if(bd)bd.outerHTML=board('bC',false);tray()}
