@@ -215,7 +215,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo" id="pie">Sorteo de Navidad 2026</p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v5</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -359,7 +359,15 @@ function applyEstado(j,first){if(!j||!j.ok)return;var prevG=S.lastGordo;S.cfg=j.
  var ae=document.activeElement;if(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select')))render();
  if(!first&&S.cfg.gordo&&S.cfg.gordo!==prevG){S.sel={};setTimeout(reveal,300)}}
 function load(first){return api('estado').then(function(j){applyEstado(j,first);if(S.view==='a'&&S.token)return loadAdm()}).catch(function(e){if(first)$('#main').innerHTML='<div class="loading">NO SE HA PODIDO CARGAR. REVISA TU CONEXIÓN Y RECARGA LA PÁGINA.</div>'})}
-function loadAdm(force){return api('admin').then(function(j){if(j.ok){S.adm=j.n;S.cfg=j.cfg;var ae=document.activeElement;if(force||(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select'))))render()}else if(force){S.view='c';render();toast(j.error||'No se ha podido abrir el admin')}}).catch(function(e){if(force&&e.message!=='SESION'){S.view='c';render();toast('Sin conexión. Vuelve a intentarlo.')}})}
+function admLoading(){var m=$('#main');return S.view==='a'&&!!m.querySelector('.loading')&&!m.querySelector('.tabs')}
+function admFail(msg){if(!admLoading())return;$('#main').innerHTML='<div class="loading" style="display:grid;gap:14px;justify-items:center">'+esc(msg)+'<button class="btn" type="button" id="admRetry">Reintentar</button><button class="btn o sm" type="button" id="admBack">Volver al sorteo</button></div>';
+ $('#admRetry').onclick=function(){$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm(true)};$('#admBack').onclick=function(){S.view='c';render()}}
+function loadAdm(force){var done=false;if(force)setTimeout(function(){if(!done)admFail('El servidor está tardando más de lo normal.')},20000);
+ return api('admin').then(function(j){done=true;
+  if(j.ok){S.adm=j.n;S.cfg=j.cfg;var ae=document.activeElement;
+   if(force||admLoading()||(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select')))){try{render()}catch(err){admFail('Error al mostrar el panel: '+err.message)}}}
+  else if(force){S.view='c';render();toast(j.error||'No se ha podido abrir el admin')}
+ }).catch(function(e){done=true;if(e.message==='SESION')return;if(force)admFail('Sin conexión con el servidor.')})}
 setInterval(function(){if(!document.hidden&&$('#ov').hidden)load(false)},15000);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)load(false)});
 
