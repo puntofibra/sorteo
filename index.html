@@ -164,6 +164,17 @@ select.in option{background:#fff;color:var(--ink)}
 .share{display:grid;gap:8px;margin-top:10px}
 .share a,.share button{display:block;text-align:center;text-decoration:none;padding:10px;border:2px solid var(--ink);color:var(--ink);font-weight:700;background:var(--paper2)}
 .ios{font-size:13px;line-height:1.6}
+.sec{border:2px solid var(--ink);padding:12px;display:grid;gap:2px;background:var(--paper2)}
+.sec .lbl{color:var(--red);margin-bottom:2px}
+.tip{font-size:13px;line-height:1.5;border-left:4px solid var(--gold);background:#fff8e1;padding:8px 10px;margin:4px 0 10px}
+.warn{font-size:13px;border-left:4px solid var(--red);background:#fde8eb;padding:8px 10px;margin-bottom:10px}
+.okk{font-size:13px;border-left:4px solid var(--holly);background:#e3f6ec;padding:8px 10px;margin-bottom:10px}
+.lgrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.logo.big{width:120px;height:120px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/16px 16px}
+.lgbtns{flex:1;min-width:160px;display:grid;gap:8px}
+.modes{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink)}
+.modes button{border:0;background:transparent;padding:8px;font-weight:700}
+.modes button.on{background:var(--ink);color:var(--paper)}
 .ios b{color:var(--red)}
 </style>
 </head>
@@ -302,14 +313,14 @@ function tray(){var t=$('#tray');if(!t)return;var k=Object.keys(S.sel).map(Numbe
 function cd(){var el=$('#cd');if(!el||!S.cfg)return;var ms=Date.parse(S.cfg.fecha)-Date.now();if(isNaN(ms)||ms<0)ms=0;
  el.innerHTML=[[Math.floor(ms/864e5),'días'],[Math.floor(ms%864e5/36e5),'horas'],[Math.floor(ms%36e5/6e4),'min'],[Math.floor(ms%6e4/1e3),'seg']].map(function(x){return '<div><b>'+pad(x[0])+'</b><span>'+x[1]+'</span></div>'}).join('')}
 
-function viewA(){var tabs=[['n','Números'],['p','Premio'],['s','Sorteo'],['g','Seguridad']];
+function viewA(){var tabs=[['n','Números'],['p','Premio y logo'],['s','Sorteo'],['g','Seguridad']];
  return head('ADMINISTRACIÓN')+'<div class="trow" style="margin-bottom:10px"><div class="muted">Panel de administración</div><button class="btn o sm" type="button" data-a="salir">Salir del admin</button></div><div class="tabs">'+tabs.map(function(t){return '<button type="button" data-t="'+t[0]+'" class="'+(S.tab===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div><div style="margin-top:14px">'+aBody()+'</div>'+foot()}
 function caduca(x){if(!x.res)return '';var ms=x.res+S.cfg.horas*36e5-Date.now();if(ms<=0)return 'caducada';var h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return 'caduca en '+h+' h '+m+' min'}
 function aBody(){var s=stats(),c=S.cfg,A=S.adm;
  if(S.tab==='n'){var rows='';ORDER.forEach(function(n){var x=A[n];if(x.e==='libre')return;rows+='<div class="rw"><span class="n">'+pad(n)+'</span><span class="i">'+esc(x.nombre)+' · <a href="https://wa.me/34'+esc(x.tel)+'" target="_blank" rel="noopener" style="color:var(--blue)">'+esc(x.tel)+'</a><small>'+(x.e==='pagado'?'pagado':'reservado, '+caduca(x))+'</small></span>'+(x.e==='reservado'?'<button class="btn g sm" type="button" data-a="pag" data-n="'+n+'">Pagado</button>':'')+'<button class="btn o sm" type="button" data-a="lib" data-n="'+n+'">Liberar</button></div>'});
   var ed='';if(S.edit!==null){var x=A[S.edit];ed='<div class="edit"><b>Número '+pad(S.edit)+'</b><div class="row2"><div><label for="eE">Estado</label><select class="in" id="eE"><option value="libre"'+(x.e==='libre'?' selected':'')+'>Libre</option><option value="reservado"'+(x.e==='reservado'?' selected':'')+'>Reservado</option><option value="pagado"'+(x.e==='pagado'?' selected':'')+'>Pagado</option></select></div><div><label for="eN">Nombre</label><input class="in" id="eN" value="'+esc(x.nombre)+'"></div></div><label for="eT">Teléfono</label><input class="in" id="eT" inputmode="tel" value="'+esc(x.tel)+'"><div class="acts"><button class="btn" type="button" data-a="save">Guardar</button><button class="btn o" type="button" data-a="cancel">Cerrar</button></div></div>'}
   return '<div class="grid2"><div class="colL"><div class="st"><div><b>'+s.l+'</b><span>libres</span></div><div><b>'+s.r+'</b><span>reservados</span></div><div><b>'+s.p+'</b><span>pagados</span></div><div><b>'+eur(s.rec)+'</b><span>recaudado</span></div></div>'+ed+'<div>'+(rows||'<div class="muted">Todavía no hay reservas.</div>')+'</div></div><div class="colR"><div class="muted">Toca un número para cambiarlo.</div>'+board('bA',true)+legend()+'</div></div>'}
- if(S.tab==='p')return '<div class="grid2"><div class="colL"><label>Logo de tu empresa</label><div class="trow"><div class="logo" style="width:80px;height:80px">'+logoH()+'</div><div style="flex:1;display:grid;gap:8px"><label class="btn o" style="margin:0;cursor:pointer">Subir logo<input type="file" id="fF" accept="image/*" hidden></label>'+(c.logo?'<button class="btn o sm" type="button" data-a="nologo">Quitar logo</button>':'')+'</div></div><p class="muted">Se ve arriba del décimo, al lado del título.</p></div><div class="colR"><label for="fT">Título</label><input class="in" id="fT" value="'+esc(c.titulo)+'"><label for="fP">Premio</label><input class="in" id="fP" value="'+esc(c.premio)+'"><label for="fD">Detalle del premio</label><input class="in" id="fD" value="'+esc(c.detalle)+'"><div class="row2"><div><label for="fE">Precio por número (€)</label><input class="in" id="fE" inputmode="decimal" value="'+String(c.precio).replace('.',',')+'"></div><div><label for="fH">Horas para pagar</label><input class="in" id="fH" inputmode="numeric" value="'+c.horas+'"></div></div><div class="acts"><button class="btn" type="button" data-a="cfg">Guardar cambios</button></div></div></div>'
+ if(S.tab==='p')return '<div class="grid2"><div class="colL"><div class="sec"><div class="lbl">El regalo</div><label for="fP">Qué regalo es</label><input class="in" id="fP" value="'+esc(c.premio)+'" placeholder="Ej.: Cesta de Navidad, iPhone 16, 200 €"><label for="fD">Detalle (opcional)</label><input class="in" id="fD" value="'+esc(c.detalle)+'" placeholder="Ej.: Se entrega el 23 de diciembre en la tienda"><label for="fT">Título del sorteo</label><input class="in" id="fT" value="'+esc(c.titulo)+'"></div><div class="sec"><div class="lbl">Precio</div><div class="row2"><div><label for="fE">Precio de cada número (€)</label><input class="in" id="fE" inputmode="decimal" value="'+String(c.precio).replace('.',',')+'"></div><div><label for="fH">Horas para pagar</label><input class="in" id="fH" inputmode="numeric" value="'+c.horas+'"></div></div><p class="muted">Si un número reservado no se paga en esas horas, vuelve a quedar libre.</p></div><div class="acts"><button class="btn" type="button" data-a="cfg">Guardar regalo y precio</button></div></div><div class="colR"><div class="sec" id="logoBox">'+logoBox()+'</div></div></div>'
  if(S.tab==='s')return '<div style="max-width:460px;margin:0 auto"><label for="fG">Número del Gordo (5 cifras)</label><input class="in" id="fG" inputmode="numeric" maxlength="5" value="'+esc(c.gordo)+'" placeholder="12345" style="font-size:28px;letter-spacing:.3em;text-align:center"><div class="err" id="gErr"></div><div class="acts"><button class="btn" type="button" data-a="gordo">Publicar el Gordo</button><button class="btn o" type="button" data-a="nogordo">Borrar resultado</button></div><p class="muted">Gana el número de las dos últimas cifras. Al publicarlo se cierra la venta y todos los que tengan la web abierta verán la animación.</p></div>'
  return '<div class="grid2"><div class="colL"><label for="fW">Nueva contraseña de admin</label><input class="in" id="fW" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><div class="err" id="wErr"></div><div class="acts"><button class="btn" type="button" data-a="pass">Cambiar contraseña</button></div></div><div class="colR"><label for="fR">Reiniciar sorteo: escribe BORRAR</label><input class="in" id="fR" placeholder="BORRAR"><div class="err" id="rErr"></div><div class="acts"><button class="btn o" type="button" data-a="reset" style="border-color:var(--red);color:var(--red)">Vaciar todos los números</button></div></div></div>'}
 
@@ -322,10 +333,10 @@ function refreshBoard(){var bd=$('#bC');if(bd)bd.outerHTML=board('bC',false);tra
 function applyEstado(j,first){if(!j||!j.ok)return;var prevG=S.lastGordo;S.cfg=j.cfg;S.n=j.n;S.win=j.win;S.ver=j.ver;
  Object.keys(S.sel).forEach(function(n){if(S.n[n]!=='libre')delete S.sel[n]});
  S.lastGordo=S.cfg.gordo;
- if(!S.busy&&!S.edit&&!document.activeElement.matches('input,select'))render();
+ var ae=document.activeElement;if(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select')))render();
  if(!first&&S.cfg.gordo&&S.cfg.gordo!==prevG){S.sel={};setTimeout(reveal,300)}}
 function load(first){return api('estado').then(function(j){applyEstado(j,first);if(S.view==='a'&&S.token)return loadAdm()}).catch(function(e){if(first)$('#main').innerHTML='<div class="loading">NO SE HA PODIDO CARGAR. REVISA TU CONEXIÓN Y RECARGA LA PÁGINA.</div>'})}
-function loadAdm(){return api('admin').then(function(j){if(j.ok){S.adm=j.n;S.cfg=j.cfg;if(!S.busy&&S.edit===null&&!document.activeElement.matches('input,select'))render()}})}
+function loadAdm(force){return api('admin').then(function(j){if(j.ok){S.adm=j.n;S.cfg=j.cfg;var ae=document.activeElement;if(force||(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select'))))render()}else if(force){S.view='c';render();toast(j.error||'No se ha podido abrir el admin')}}).catch(function(e){if(force&&e.message!=='SESION'){S.view='c';render();toast('Sin conexión. Vuelve a intentarlo.')}})}
 setInterval(function(){if(!document.hidden&&$('#ov').hidden)load(false)},15000);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)load(false)});
 
@@ -364,7 +375,7 @@ function loginDlg(){dlg('<h3>Menú de admin</h3><form id="fl" novalidate><label 
  $('#lC').onclick=closeDlg;setTimeout(function(){$('#lP').focus()},50);
  $('#fl').onsubmit=function(e){e.preventDefault();$('#lOk').disabled=true;
   api('login',{pass:$('#lP').value}).then(function(j){if(!j.ok){$('#lE').textContent=j.error;$('#lOk').disabled=false;Snd.err();return}
-   S.token=j.token;ls.set('sorteo_tok',j.token);S.view='a';Snd.ok();$('#ov').hidden=true;$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm()}).catch(function(){$('#lE').textContent='Sin conexión. Inténtalo otra vez.';$('#lOk').disabled=false})}}
+   S.token=j.token;ls.set('sorteo_tok',j.token);S.view='a';Snd.ok();if(document.activeElement)document.activeElement.blur();$('#ov').hidden=true;$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm(true)}).catch(function(){$('#lE').textContent='Sin conexión. Inténtalo otra vez.';$('#lOk').disabled=false})}}
 function adm(action,data,msg){S.busy=true;return api(action,data).then(function(j){S.busy=false;if(!j.ok){toast(j.error);Snd.err();return j}
  if(j.n){S.adm=j.n;S.cfg=j.cfg}S.edit=null;if(msg){toast(msg);Snd.ok()}render();load(false);return j}).catch(function(e){S.busy=false;if(e.message!=='SESION'){toast('Sin conexión. No se ha guardado.');Snd.err()}})}
 
@@ -390,16 +401,37 @@ document.addEventListener('click',function(e){var t=e.target;
  else if(a==='salir'){api('logout').catch(function(){});S.token='';ls.set('sorteo_tok','');S.view='c';S.adm=null;render()}
 });
 
-/* logo: se reduce en el móvil antes de subirlo */
+/* logo: se elige de la galería, se revisa el tamaño y se ajusta a un cuadrado */
+var LOGO_PX=256;
+function logoBox(){var c=S.cfg,L=S.lp;
+ var h='<div class="lbl">Logo de tu empresa</div><div class="tip"><b>Tamaño recomendado:</b> imagen cuadrada de <b>500 × 500 px</b> (mínimo 200 × 200), en PNG con fondo transparente o blanco. Si no es cuadrada, aquí mismo eliges cómo ajustarla.</div>';
+ if(!L){h+='<div class="lgrow"><div class="logo big">'+logoH()+'</div><div class="lgbtns"><label class="btn" style="margin:0;cursor:pointer">'+(c.logo?'Cambiar logo':'Elegir imagen de la galería')+'<input type="file" id="fF" accept="image/*" hidden></label>'+(c.logo?'<button class="btn o sm" type="button" data-a="nologo">Quitar logo</button>':'')+'</div></div><p class="muted">Se ve arriba del décimo, al lado del título.</p>';return h}
+ var sq=Math.max(L.w,L.h)/Math.min(L.w,L.h)<1.15,small=Math.min(L.w,L.h)<200,msg,cls;
+ if(small){msg='Tu imagen mide '+L.w+' × '+L.h+' px. Es pequeña y puede verse borrosa. Mejor una de 500 × 500 px.';cls='warn'}
+ else if(!sq){msg='Tu imagen mide '+L.w+' × '+L.h+' px. No es cuadrada: elige si quieres verla entera o recortada al centro.';cls='warn'}
+ else{msg='Tu imagen mide '+L.w+' × '+L.h+' px. Tamaño perfecto.';cls='okk'}
+ h+='<div class="'+cls+'">'+msg+'</div><div class="lgrow"><div class="logo big"><img alt="Vista previa del logo" src="'+L.out+'"></div><div class="lgbtns">'
+  +(sq?'':'<div class="modes"><button type="button" data-a="lpmode" data-m="fit" class="'+(L.mode==='fit'?'on':'')+'">Entera</button><button type="button" data-a="lpmode" data-m="crop" class="'+(L.mode==='crop'?'on':'')+'">Recortada</button></div>')
+  +'<button class="btn" type="button" data-a="lpsave">Guardar este logo</button><button class="btn o sm" type="button" data-a="lpcancel">Cancelar</button></div></div><p class="muted">Así se verá en el décimo.</p>';
+ return h}
+function updLogoBox(){var b=$('#logoBox');if(b)b.innerHTML=logoBox()}
+function makeLogo(){var L=S.lp,im=L.img,cv=document.createElement('canvas'),x=cv.getContext('2d'),sizes=[LOGO_PX,200,160,128],out='';
+ for(var i=0;i<sizes.length;i++){var P=sizes[i];cv.width=cv.height=P;x.clearRect(0,0,P,P);
+  var k=L.mode==='crop'?Math.max(P/im.width,P/im.height):Math.min(P/im.width,P/im.height),w=im.width*k,h=im.height*k;
+  x.drawImage(im,(P-w)/2,(P-h)/2,w,h);out=cv.toDataURL('image/png');if(out.length<45000)break;
+  var wb=cv.toDataURL('image/webp',.85);if(wb.indexOf('data:image/webp')===0&&wb.length<45000){out=wb;break}
+  var c2=document.createElement('canvas');c2.width=c2.height=P;var y=c2.getContext('2d');y.fillStyle='#fff';y.fillRect(0,0,P,P);y.drawImage(cv,0,0);out=c2.toDataURL('image/jpeg',.85);if(out.length<45000)break}
+ L.out=out;L.ok=out.length<45000}
 document.addEventListener('change',function(e){if(e.target.id!=='fF'||!e.target.files[0])return;var f=e.target.files[0],r=new FileReader();
- r.onload=function(){var im=new Image();im.onload=function(){var sz=[220,180,140,110],out='';
-  for(var i=0;i<sz.length;i++){var k=Math.min(1,sz[i]/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
-   out=cv.toDataURL('image/png');if(out.length<45000)break;out=cv.toDataURL('image/webp',.85);if(out.indexOf('data:image/webp')===0&&out.length<45000)break;out=cv.toDataURL('image/jpeg',.85);if(out.length<45000)break}
-  if(out.length>=45000){toast('La imagen es demasiado grande. Prueba con otra.');return}
-  toast('Subiendo logo…');adm('setCfg',{logo:out},'Logo guardado')};im.onerror=function(){toast('No se puede leer esa imagen')};im.src=r.result};r.readAsDataURL(f)});
+ r.onload=function(){var im=new Image();im.onload=function(){var sq=Math.max(im.width,im.height)/Math.min(im.width,im.height)<1.15;S.lp={img:im,w:im.width,h:im.height,mode:sq?'crop':'fit'};makeLogo();updLogoBox()};im.onerror=function(){toast('No se puede leer esa imagen. Prueba con una foto JPG o PNG.')};im.src=r.result};r.readAsDataURL(f)});
+document.addEventListener('click',function(e){var t=e.target.closest('[data-a]');if(!t)return;var a=t.dataset.a;
+ if(a==='lpmode'){S.lp.mode=t.dataset.m;makeLogo();updLogoBox();Snd.click()}
+ else if(a==='lpcancel'){S.lp=null;updLogoBox()}
+ else if(a==='lpsave'){if(!S.lp.ok){toast('No se ha podido reducir la imagen. Prueba con otra.');return}var out=S.lp.out;t.disabled=true;t.textContent='Guardando…';adm('setCfg',{logo:out},'Logo guardado').then(function(){S.lp=null;updLogoBox()})}
+});
 
 /* botones superiores */
-$('#bAdm').onclick=function(){Snd.click();if(S.view==='a'){S.view='c';render();return}if(S.token){S.view='a';$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm();return}loginDlg()};
+$('#bAdm').onclick=function(){Snd.click();if(S.view==='a'){S.view='c';render();return}if(S.token){S.view='a';$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm(true);return}loginDlg()};
 function btns(){$('#bSfx').className='ib'+(Snd.sfx?'':' off');$('#bMus').className='ib'+(Snd.music?'':' off')}
 $('#bSfx').onclick=function(){Snd.setSfx(!Snd.sfx);btns();if(Snd.sfx)Snd.click()};
 $('#bMus').onclick=function(){Snd.init();Snd.setMusic(!Snd.music);btns()};
