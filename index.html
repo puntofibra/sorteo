@@ -456,7 +456,7 @@ $('#bShare').onclick=function(){Snd.click();var url=location.href.split('#')[0].
  dlg('<h3>Compartir</h3><div class="share"><a target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(txt+' '+url)+'">WhatsApp</a><a target="_blank" rel="noopener" href="https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(txt)+'">Telegram</a><a href="mailto:?subject='+encodeURIComponent(document.title)+'&body='+encodeURIComponent(txt+' '+url)+'">Correo</a><button type="button" id="sCp">Copiar enlace</button></div><div class="acts"><button class="btn o" type="button" id="sK">Cerrar</button></div>');
  $('#sK').onclick=closeDlg;$('#sCp').onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){toast('Enlace copiado')}).catch(function(){prompt('Copia el enlace',url)})}};
 
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+if('serviceWorker' in navigator){var hadSW=!!navigator.serviceWorker.controller;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){r.update()}).catch(function(){});navigator.serviceWorker.addEventListener('controllerchange',function(){if(hadSW&&!window._rl){window._rl=1;location.reload()}})}
 setInterval(cd,1000);
 load(true);
 })();
