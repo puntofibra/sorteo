@@ -360,7 +360,7 @@ function render(){if(!S.cfg)return;var iT=$('#iT');if(iT)iT.textContent=S.cfg.ti
 function refreshBoard(){var bd=$('#bC');if(bd)bd.outerHTML=board('bC',false);tray()}
 
 /* carga y sondeo */
-function applyEstado(j,first){if(!j||!j.ok)return;var prevG=S.lastGordo;S.cfg=j.cfg;S.n=j.n;S.win=j.win;S.ver=j.ver;
+function applyEstado(j,first){if(!j||!j.ok){if(!S.cfg&&j&&j.error)$('#main').innerHTML='<div class="loading" style="line-height:1.6">'+esc(j.error).toUpperCase()+'</div>';return}var prevG=S.lastGordo;S.cfg=j.cfg;S.n=j.n;S.win=j.win;S.ver=j.ver;
  Object.keys(S.sel).forEach(function(n){if(S.n[n]!=='libre')delete S.sel[n]});
  S.lastGordo=S.cfg.gordo;
  var ae=document.activeElement;if(quiet())render();
