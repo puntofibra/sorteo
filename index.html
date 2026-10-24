@@ -223,7 +223,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v11</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v12</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -355,7 +355,7 @@ function aBody(){var s=stats(),c=S.cfg,A=S.adm;
 
 function render(){if(!S.cfg)return;var iT=$('#iT');if(iT)iT.textContent=S.cfg.titulo;document.title=S.cfg.titulo+(S.cfg.empresa?' · '+S.cfg.empresa:'');setApp(S.cfg.empresa||S.cfg.titulo);$('#pie').textContent=(S.cfg.empresa?S.cfg.empresa+' · ':'')+'Sorteo de Navidad 2026';
  var y=scrollY;$('#main').innerHTML=S.view==='a'&&S.adm?viewA():viewC();scrollTo(0,y);
- $('#bAdm').textContent=S.view==='a'?'Salir':(S.token?'Panel admin':'Admin');tray();cd()}
+ $('#bAdm').textContent=S.view==='a'?'Salir':'Admin';tray();cd()}
 function refreshBoard(){var bd=$('#bC');if(bd)bd.outerHTML=board('bC',false);tray()}
 
 /* carga y sondeo */
