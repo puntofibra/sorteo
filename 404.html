@@ -223,7 +223,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v15</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v16</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -308,28 +308,29 @@ return api})();
 
 function toast(m){var t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove()},3000)}
 function st(n){return S.view==='a'&&S.adm?S.adm[n].e:(S.n[n]||'libre')}
+function mine(n){return !!S.mios[n]&&st(n)==='pagado'}
 function stats(){var l=0,r=0,p=0;for(var k=0;k<100;k++){var e=st(k);if(e==='libre')l++;else if(e==='reservado')r++;else p++}return{l:l,r:r,p:p,rec:p*S.cfg.precio}}
 function logoH(){return S.cfg.logo?'<img alt="Logo" src="'+esc(S.cfg.logo)+'">':'LOGO'}
 function winNum(){return S.cfg.gordo?Number(S.cfg.gordo.slice(-2)):null}
 
 function board(id,adm){var h='',w=winNum();ORDER.forEach(function(n){var e=st(n),c='b';
  if(e==='pagado')c+=' ven';else if(e==='reservado')c+=' res';
- if(!adm&&S.sel[n])c='b sel';if(w===n)c='b win';if(!adm&&S.mios[n])c+=' mio';
- var tt=adm&&S.adm[n].nombre?S.adm[n].nombre:(S.mios[n]?'Tu número':'');
+ if(!adm&&S.sel[n])c='b sel';if(w===n)c='b win';if(!adm&&mine(n))c+=' mio';
+ var tt=adm&&S.adm[n].nombre?S.adm[n].nombre:(mine(n)?'Tu número (pagado)':'');
  h+='<button type="button" class="'+c+'" data-n="'+n+'" title="'+esc(tt)+'" aria-label="Número '+pad(n)+(e!=='libre'?', '+e:'')+'">'+pad(n)+'</button>'});
  return '<div class="board" id="'+id+'">'+h+'</div>'}
-function legend(){return '<div class="lgd"><span><i style="border:1px solid var(--ink);background:var(--paper2)"></i>Libre</span><span><i style="border:2px dashed var(--blue)"></i>Reservado</span><span><i style="background:repeating-linear-gradient(-45deg,var(--paperdk) 0 2px,var(--paper) 2px 4px);border:1px solid #9bb0a4"></i>Vendido</span>'+(Object.keys(S.mios).length&&S.view==='c'?'<span><i style="border-radius:50%;background:var(--holly);width:8px;height:8px"></i>Tus números</span>':'')+'</div>'}
+function legend(){return '<div class="lgd"><span><i style="border:1px solid var(--ink);background:var(--paper2)"></i>Libre</span><span><i style="border:2px dashed var(--blue)"></i>Reservado</span><span><i style="background:repeating-linear-gradient(-45deg,var(--paperdk) 0 2px,var(--paper) 2px 4px);border:1px solid #9bb0a4"></i>Vendido</span>'+(Object.keys(S.mios).some(function(k){return mine(+k)})&&S.view==='c'?'<span><i style="border-radius:50%;background:var(--holly);width:8px;height:8px"></i>Tus números</span>':'')+'</div>'}
 function head(sub){return '<div class="tline"><span>LOTERÍA DE NAVIDAD · '+sub+'</span><span>22/12/2026</span></div><div class="head"><div class="logo">'+logoH()+'</div><h1>'+esc(S.cfg.titulo)+'</h1></div><p class="rng">NÚMEROS 01 AL 00 · SERIE '+esc(String(S.cfg.empresa||'FuturMovil').toUpperCase())+'</p>'}
 function foot(){return '<div class="bars" aria-hidden="true"></div><div class="foot"><span>Gana la terminación del Gordo</span><span>'+eur(S.cfg.precio)+' por número</span></div>'}
 
 function winText(){var w=S.win;if(!w)return '';return w.e==='pagado'?'Gana '+esc(w.nombre)+'. Enhorabuena.':w.e==='reservado'?'El '+pad(w.n)+' está reservado y sin pagar.':'El '+pad(w.n)+' no se vendió. Sorteo desierto.'}
 function viewC(){var c=S.cfg,s=stats(),ocu=s.r+s.p,res='';
- if(c.gordo&&S.win){res='<div class="result"><div class="lbl">Resultado del sorteo</div><div class="gordo">'+esc(c.gordo.slice(0,3))+'<u>'+esc(c.gordo.slice(3))+'</u></div><p>Terminación <b>'+pad(S.win.n)+'</b>. '+winText()+(S.mios[S.win.n]?' <b>¡Es tu número!</b>':'')+'</p><button class="btn o sm" type="button" id="bRev">Ver la animación</button></div>'}
- var mios=Object.keys(S.mios).map(Number).filter(function(n){return st(n)!=='libre'}).sort(function(a,b){return (a||100)-(b||100)});
+ if(c.gordo&&S.win){res='<div class="result"><div class="lbl">Resultado del sorteo</div><div class="gordo">'+esc(c.gordo.slice(0,3))+'<u>'+esc(c.gordo.slice(3))+'</u></div><p>Terminación <b>'+pad(S.win.n)+'</b>. '+winText()+(mine(S.win.n)?' <b>¡Es tu número!</b>':'')+'</p><button class="btn o sm" type="button" id="bRev">Ver la animación</button></div>'}
+ var mios=Object.keys(S.mios).map(Number).filter(mine).sort(function(a,b){return (a||100)-(b||100)});
  return head('CLIENTES')+'<div class="grid2"><div class="colL">'
  +'<div class="pr"><span>PREMIO</span><div><b>'+esc(c.premio)+'</b>'+(c.detalle?'<small>'+esc(c.detalle)+'</small>':'')+'<div class="price"><strong>'+eur(c.precio)+'</strong> por número</div></div></div>'
  +'<div><div class="lbl">Faltan para el Gordo</div><div class="cd" id="cd"></div></div>'
- +(mios.length?'<div><div class="lbl">Tus números</div><div class="chips">'+mios.map(function(n){return '<b style="background:'+(st(n)==='pagado'?'var(--holly)':'var(--blue)')+'">'+pad(n)+'</b>'}).join('')+'</div><div class="muted">Verde: pagado · Azul: pendiente de pago</div></div>':'')
+ +(mios.length?'<div><div class="lbl">Tus números</div><div class="chips">'+mios.map(function(n){return '<b style="background:'+(st(n)==='pagado'?'var(--holly)':'var(--blue)')+'">'+pad(n)+'</b>'}).join('')+'</div><div class="muted">Números pagados y confirmados a tu nombre</div></div>':'')
  +'<div><div class="lbl">Cómo se juega</div><ol class="how"><li>Elige uno o varios números del 01 al 00.</li><li>Resérvalos con tu nombre y teléfono.</li><li>Paga en las '+c.horas+' horas siguientes y confirmamos tu número.</li><li>Gana quien tenga las dos últimas cifras del Gordo.</li></ol></div>'
  +'</div><div class="colR">'+res
  +'<div class="trow"><div class="lbl">Elige tus números</div><div class="muted">'+ocu+' de 100 ocupados · quedan '+(100-ocu)+'</div></div><div class="prog"><i style="width:'+ocu+'%"></i></div>'
@@ -408,7 +409,7 @@ function reveal(){var g=S.cfg.gordo;if(!g)return;clearRev();Snd.init();
  dlg('<h3 style="text-align:center">El Gordo de Navidad</h3><div class="digs" id="dgs">'+g.split('').map(function(d,i){return '<div class="dg'+(i>=3?' fin':'')+'">?</div>'}).join('')+'</div><p id="rt" style="text-align:center">Sorteando…</p><div id="rw" style="text-align:center"></div><div class="acts"><button class="btn o" type="button" id="rS">Saltar</button><button class="btn" type="button" id="rX" hidden>Cerrar</button></div>');
  var sp=[].slice.call(document.querySelectorAll('#dgs .dg'));
  function fin(){clearRev();sp.forEach(function(s,i){s.textContent=g[i];s.classList.add('stop')});var w=S.win,t=$('#rt');if(!t||!w)return;t.textContent='Terminación '+pad(w.n);
-  $('#rw').innerHTML='<div class="gordo">'+pad(w.n)+'</div><p>'+winText()+(w.e==='pagado'?' Premio: '+esc(S.cfg.premio):'')+(S.mios[w.n]?'<br><b>¡Es tu número!</b>':'')+'</p>';$('#rS').hidden=true;$('#rX').hidden=false;$('#rX').onclick=closeDlg;
+  $('#rw').innerHTML='<div class="gordo">'+pad(w.n)+'</div><p>'+winText()+(w.e==='pagado'?' Premio: '+esc(S.cfg.premio):'')+(mine(w.n)?'<br><b>¡Es tu número!</b>':'')+'</p>';$('#rS').hidden=true;$('#rX').hidden=false;$('#rX').onclick=closeDlg;
   if(w.e!=='libre'){Snd.fanfare();Conf.burst(innerWidth*.25,innerHeight*.4,80);setTimeout(function(){Conf.burst(innerWidth*.75,innerHeight*.4,80)},350)}else Snd.err()}
  sp.forEach(function(s,i){var iv=setInterval(function(){s.textContent=Math.floor(Math.random()*10);Snd.tick()},75);revT.push(iv);revT.push(setTimeout(function(){clearInterval(iv);s.textContent=g[i];s.classList.add('stop');Snd.stopDigit(i>=3);if(i===sp.length-1)revT.push(setTimeout(fin,700))},1300+i*750))});
  $('#rS').onclick=fin}
@@ -435,7 +436,7 @@ function adm(action,data,msg){S.busy=true;return api(action,data).then(function(
  if(j.n){S.adm=j.n;S.cfg=j.cfg}S.edit=null;if(msg){toast(j.aviso?msg+'. '+j.aviso:msg);Snd.ok()}render();load(false);return j}).catch(function(e){S.busy=false;if(e.message!=='SESION'){toast('Sin conexión. No se ha guardado.');Snd.err()}})}
 
 document.addEventListener('click',function(e){var t=e.target;
- var b=t.closest('.b');if(b&&b.parentNode.id==='bC'){var n=Number(b.dataset.n);if(S.cfg.gordo)return;if(st(n)!=='libre'){Snd.err();toast(S.mios[n]?'Este número ya es tuyo':'El '+pad(n)+' ya está cogido');return}if(S.sel[n]){delete S.sel[n];Snd.unpick()}else{if(Object.keys(S.sel).length>=MAX){toast('Máximo '+MAX+' números por reserva');Snd.err();return}S.sel[n]=1;Snd.pick(Object.keys(S.sel).length)}refreshBoard();return}
+ var b=t.closest('.b');if(b&&b.parentNode.id==='bC'){var n=Number(b.dataset.n);if(S.cfg.gordo)return;if(st(n)!=='libre'){Snd.err();toast(mine(n)?'Este número ya es tuyo':'El '+pad(n)+' ya está cogido');return}if(S.sel[n]){delete S.sel[n];Snd.unpick()}else{if(Object.keys(S.sel).length>=MAX){toast('Máximo '+MAX+' números por reserva');Snd.err();return}S.sel[n]=1;Snd.pick(Object.keys(S.sel).length)}refreshBoard();return}
  if(b&&b.parentNode.id==='bA'){S.edit=Number(b.dataset.n);Snd.click();render();var ed=$('.edit');if(ed)ed.scrollIntoView({block:'center',behavior:'smooth'});return}
  if(t.id==='bRes'){Snd.click();reservar();return}
  if(t.id==='bRev'){reveal();return}
