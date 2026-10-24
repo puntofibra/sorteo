@@ -223,7 +223,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v13</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v14</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -362,16 +362,17 @@ function refreshBoard(){var bd=$('#bC');if(bd)bd.outerHTML=board('bC',false);tra
 function applyEstado(j,first){if(!j||!j.ok)return;var prevG=S.lastGordo;S.cfg=j.cfg;S.n=j.n;S.win=j.win;S.ver=j.ver;
  Object.keys(S.sel).forEach(function(n){if(S.n[n]!=='libre')delete S.sel[n]});
  S.lastGordo=S.cfg.gordo;
- var ae=document.activeElement;if(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select')))render();
+ var ae=document.activeElement;if(quiet())render();
  if(!first&&S.cfg.gordo&&S.cfg.gordo!==prevG){S.sel={};setTimeout(reveal,300)}}
 function load(first){return api('estado').then(function(j){applyEstado(j,first);if(S.view==='a'&&S.token)return loadAdm()}).catch(function(e){if(first)$('#main').innerHTML='<div class="loading">NO SE HA PODIDO CARGAR. REVISA TU CONEXIÓN Y RECARGA LA PÁGINA.</div>'})}
+function quiet(){var ae=document.activeElement;return !S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select,textarea'))&&!(S.view==='a'&&S.tab!=='n')&&!(S.picking&&Date.now()-S.picking<120000)}
 function admLoading(){var m=$('#main');return S.view==='a'&&!!m.querySelector('.loading')&&!m.querySelector('.tabs')}
 function admFail(msg){if(!admLoading())return;$('#main').innerHTML='<div class="loading" style="display:grid;gap:14px;justify-items:center">'+esc(msg)+'<button class="btn" type="button" id="admRetry">Reintentar</button><button class="btn o sm" type="button" id="admBack">Volver al sorteo</button></div>';
  $('#admRetry').onclick=function(){$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm(true)};$('#admBack').onclick=function(){S.view='c';render()}}
 function loadAdm(force){var done=false;if(force)setTimeout(function(){if(!done)admFail('El servidor está tardando más de lo normal.')},20000);
  return api('admin').then(function(j){done=true;
   if(j.ok){S.adm=j.n;S.cfg=j.cfg;var ae=document.activeElement;
-   if(force||admLoading()||(!S.busy&&S.edit===null&&!S.lp&&!(ae&&ae.matches&&ae.matches('input,select')))){try{render()}catch(err){admFail('Error al mostrar el panel: '+err.message)}}}
+   if(force||admLoading()||(quiet())){try{render()}catch(err){admFail('Error al mostrar el panel: '+err.message)}}}
   else if(force){S.view='c';render();toast(j.error||'No se ha podido abrir el admin')}
  }).catch(function(e){done=true;if(e.message==='SESION')return;if(force)admFail('Sin conexión con el servidor.')})}
 setInterval(function(){if(!document.hidden&&$('#ov').hidden)load(false)},15000);
@@ -469,7 +470,8 @@ function makeLogo(){var L=S.lp,im=L.img,cv=document.createElement('canvas'),x=cv
   var wb=cv.toDataURL('image/webp',.85);if(wb.indexOf('data:image/webp')===0&&wb.length<45000){out=wb;break}
   var c2=document.createElement('canvas');c2.width=c2.height=P;var y=c2.getContext('2d');y.fillStyle='#fff';y.fillRect(0,0,P,P);y.drawImage(cv,0,0);out=c2.toDataURL('image/jpeg',.85);if(out.length<45000)break}
  L.out=out;L.ok=out.length<45000}
-document.addEventListener('change',function(e){if(e.target.id!=='fF'||!e.target.files[0])return;var f=e.target.files[0],r=new FileReader();
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('label')&&e.target.closest('label').querySelector('#fF'))S.picking=Date.now()},true);
+document.addEventListener('change',function(e){if(e.target.id!=='fF')return;S.picking=0;if(!e.target.files[0])return;var f=e.target.files[0],r=new FileReader();
  r.onload=function(){var im=new Image();im.onload=function(){var sq=Math.max(im.width,im.height)/Math.min(im.width,im.height)<1.15;S.lp={img:im,w:im.width,h:im.height,mode:sq?'crop':'fit'};makeLogo();updLogoBox()};im.onerror=function(){toast('No se puede leer esa imagen. Prueba con una foto JPG o PNG.')};im.src=r.result};r.readAsDataURL(f)});
 document.addEventListener('click',function(e){var t=e.target.closest('[data-a]');if(!t)return;var a=t.dataset.a;
  if(a==='lpmode'){S.lp.mode=t.dataset.m;makeLogo();updLogoBox();Snd.click()}
