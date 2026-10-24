@@ -223,7 +223,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v14</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v15</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -414,6 +414,13 @@ function reveal(){var g=S.cfg.gordo;if(!g)return;clearRev();Snd.init();
  $('#rS').onclick=fin}
 
 /* admin */
+function confirmLib(n,go){var x=S.adm[n]||{},who=x.nombre?esc(x.nombre)+(x.tel?' · '+esc(x.tel):''):'sin datos',st=x.e==='pagado'?'<b style="color:var(--holly)">PAGADO</b>':'<b style="color:var(--blue)">RESERVADO</b>';
+ dlg('<h3>Liberar número</h3><div style="text-align:center;margin:6px 0 12px"><div class="gordo" style="color:var(--red)">'+pad(n)+'</div><div>'+st+'</div><div class="muted">'+who+'</div></div><p>¿Quieres liberar este número? Dejará de estar a nombre de esta persona.</p><div class="acts"><button class="btn" type="button" id="lb1">Sí, liberar</button><button class="btn o" type="button" id="lbNo">Cancelar</button></div>');
+ $('#lbNo').onclick=closeDlg;Snd.click();
+ $('#lb1').onclick=function(){
+  dlg('<h3>¿Estás seguro?</h3><div class="warn" style="line-height:1.6">El número <b>'+pad(n)+'</b> volverá a ponerse <b>a la venta</b> y se borrarán los datos de '+(x.nombre?'<b>'+esc(x.nombre)+'</b>':'esta reserva')+'.'+(x.e==='pagado'?'<br><b>Este número ya está pagado.</b> Si lo liberas, tendrás que devolverle el dinero.':'')+'<br>Esta acción no se puede deshacer.</div><div class="acts"><button class="btn" type="button" id="lb2" style="background:var(--red)">Liberar y poner a la venta</button><button class="btn o" type="button" id="lbNo2">No, mantenerlo</button></div>');
+  $('#lbNo2').onclick=closeDlg;Snd.err();
+  $('#lb2').onclick=function(){$('#ov').hidden=true;go()}}}
 function newPassDlg(){dlg('<h3>Crea tu contraseña</h3><p>Estás entrando con una contraseña temporal. Elige la tuya para entrar a partir de ahora.</p><form id="fnp" novalidate><label for="np1">Nueva contraseña</label><input class="in" id="np1" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><label for="np2">Repítela</label><input class="in" id="np2" type="password" autocomplete="new-password"><div class="err" id="npE"></div><div class="acts"><button class="btn" type="submit" id="npOk">Guardar y entrar</button></div></form>');
  $('#fnp').onsubmit=function(e){e.preventDefault();var a=$('#np1').value,b=$('#np2').value;if(a.length<6){$('#npE').textContent='Mínimo 6 caracteres.';return}if(a!==b){$('#npE').textContent='Las dos contraseñas no coinciden.';return}
   $('#npOk').disabled=true;api('setPass',{nueva:a}).then(function(j){if(!j.ok){$('#npE').textContent=j.error;$('#npOk').disabled=false;return}
@@ -435,9 +442,9 @@ document.addEventListener('click',function(e){var t=e.target;
  var tb=t.closest('.tabs button');if(tb){S.tab=tb.dataset.t;S.edit=null;S.lp=null;Snd.click();render();if(S.tab==='c')loadCli();return}
  var a=t.dataset&&t.dataset.a;if(!a)return;var n2=Number(t.dataset.n);
  if(a==='pag')adm('setNum',{n:n2,e:'pagado'},'Número '+pad(n2)+' pagado');
- else if(a==='lib')adm('setNum',{n:n2,e:'libre'},'Número '+pad(n2)+' liberado');
+ else if(a==='lib')confirmLib(n2,function(){adm('setNum',{n:n2,e:'libre'},'Número '+pad(n2)+' liberado y de nuevo a la venta')});
  else if(a==='cancel'){S.edit=null;render()}
- else if(a==='save'){var nn=S.edit;adm('setNum',{n:nn,e:$('#eE').value,nombre:$('#eN').value.trim()||'Sin nombre',tel:$('#eT').value,email:$('#eM').value.trim()},'Número '+pad(nn)+' actualizado')}
+ else if(a==='save'){var nn=S.edit;if($('#eE').value==='libre'&&S.adm[nn].e!=='libre'){confirmLib(nn,function(){adm('setNum',{n:nn,e:'libre'},'Número '+pad(nn)+' liberado y de nuevo a la venta')});return}adm('setNum',{n:nn,e:$('#eE').value,nombre:$('#eN').value.trim()||'Sin nombre',tel:$('#eT').value,email:$('#eM').value.trim()},'Número '+pad(nn)+' actualizado')}
  else if(a==='cfg'){var pr=Number($('#fE').value.replace(',','.')),hh=parseInt($('#fH').value,10);if(!(pr>=0)){toast('Escribe un precio válido');Snd.err();return}if(!(hh>0)){toast('Escribe las horas para pagar');Snd.err();return}
   t.disabled=true;t.textContent='Guardando…';adm('setCfg',{titulo:$('#fT').value.trim()||S.cfg.titulo,empresa:$('#fN').value.trim(),premio:$('#fP').value.trim()||S.cfg.premio,detalle:$('#fD').value.trim(),precio:pr,horas:hh,pago:$('#fPg')?$('#fPg').value.trim():undefined,bizum:$('#fBz')?$('#fBz').value.replace(/\D/g,''):undefined,logo:S.lp&&S.lp.ok?S.lp.out:undefined},S.lp&&S.lp.ok?'Cambios y logo guardados':'Cambios guardados').then(function(j){if(j&&j.ok)S.lp=null;render()})}
  else if(a==='nologo')adm('setCfg',{logo:''},'Logo quitado');
