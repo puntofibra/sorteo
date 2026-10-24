@@ -223,7 +223,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v12</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v13</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -438,7 +438,7 @@ document.addEventListener('click',function(e){var t=e.target;
  else if(a==='cancel'){S.edit=null;render()}
  else if(a==='save'){var nn=S.edit;adm('setNum',{n:nn,e:$('#eE').value,nombre:$('#eN').value.trim()||'Sin nombre',tel:$('#eT').value,email:$('#eM').value.trim()},'Número '+pad(nn)+' actualizado')}
  else if(a==='cfg'){var pr=Number($('#fE').value.replace(',','.')),hh=parseInt($('#fH').value,10);if(!(pr>=0)){toast('Escribe un precio válido');Snd.err();return}if(!(hh>0)){toast('Escribe las horas para pagar');Snd.err();return}
-  adm('setCfg',{titulo:$('#fT').value.trim()||S.cfg.titulo,empresa:$('#fN').value.trim(),premio:$('#fP').value.trim()||S.cfg.premio,detalle:$('#fD').value.trim(),precio:pr,horas:hh,pago:$('#fPg')?$('#fPg').value.trim():undefined,bizum:$('#fBz')?$('#fBz').value.replace(/\D/g,''):undefined},'Cambios guardados')}
+  t.disabled=true;t.textContent='Guardando…';adm('setCfg',{titulo:$('#fT').value.trim()||S.cfg.titulo,empresa:$('#fN').value.trim(),premio:$('#fP').value.trim()||S.cfg.premio,detalle:$('#fD').value.trim(),precio:pr,horas:hh,pago:$('#fPg')?$('#fPg').value.trim():undefined,bizum:$('#fBz')?$('#fBz').value.replace(/\D/g,''):undefined,logo:S.lp&&S.lp.ok?S.lp.out:undefined},S.lp&&S.lp.ok?'Cambios y logo guardados':'Cambios guardados').then(function(j){if(j&&j.ok)S.lp=null;render()})}
  else if(a==='nologo')adm('setCfg',{logo:''},'Logo quitado');
  else if(a==='gordo'){var g=$('#fG').value.replace(/\D/g,'');if(!g){$('#gErr').textContent='Escribe las cifras del Gordo.';Snd.err();return}while(g.length<5)g='0'+g;
   adm('setGordo',{gordo:g}).then(function(j){if(j&&j.ok)return api('estado').then(function(x){applyEstado(x,true);S.view='c';render();reveal()})})}
