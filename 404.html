@@ -156,7 +156,9 @@ select.in option{background:#fff;color:var(--ink)}
 :root{padding-top:env(safe-area-inset-top,0px)}
 [hidden]{display:none!important}
 .topbar .sp{flex:1}
-.ib.ico{display:inline-grid;place-items:center;padding:6px 10px;line-height:0}
+.ib.ico{display:inline-grid;place-items:center;padding:6px 10px;line-height:0;position:relative}
+.ib.ico.off{text-decoration:none}
+.ib.ico.off::after{content:"";position:absolute;left:8px;right:8px;top:50%;height:2px;background:currentColor;transform:rotate(-40deg)}
 .topbar{background:var(--night);box-shadow:0 6px 14px rgba(0,0,0,.25);max-width:none;padding-left:max(16px,calc((100vw - 1040px)/2));padding-right:max(16px,calc((100vw - 1040px)/2));margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
 .ph-size{display:grid;place-items:center;text-align:center;font-size:12px;line-height:1.3;color:var(--muted)}
 .ph-size b{display:block;font-size:16px;color:var(--ink)}
@@ -205,7 +207,7 @@ textarea.in{resize:vertical;font:inherit}
 <canvas id="conf" aria-hidden="true"></canvas>
 
 <div class="topbar">
-  <button class="ib" id="bMus" type="button">Música</button>
+  <button class="ib ico" id="bMus" type="button" title="Música" aria-label="Música"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M9 17.5V5.2l11-2.2v12.3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="6.5" cy="17.8" rx="3.2" ry="2.6"/><ellipse cx="17.5" cy="15.6" rx="3.2" ry="2.6"/></svg></button>
   <button class="ib" id="bSfx" type="button">Sonidos</button>
   <span class="sp"></span>
   <button class="ib" id="bInst" type="button">Instalar app</button>
@@ -221,7 +223,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v10</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v11</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -499,7 +501,7 @@ document.addEventListener('click',function(e){var t=e.target;
 
 /* botones superiores */
 $('#bAdm').onclick=function(){Snd.click();if(S.view==='a'){S.view='c';render();return}if(S.token){S.view='a';$('#main').innerHTML='<div class="loading">CARGANDO <i></i><i></i><i></i></div>';loadAdm(true);return}loginDlg()};
-function btns(){$('#bSfx').className='ib'+(Snd.sfx?'':' off');$('#bMus').className='ib'+(Snd.music?'':' off')}
+function btns(){$('#bSfx').className='ib'+(Snd.sfx?'':' off');$('#bMus').className='ib ico'+(Snd.music?'':' off');$('#bMus').setAttribute('aria-pressed',Snd.music?'true':'false');$('#bMus').title=Snd.music?'Música: activada':'Música: apagada'}
 $('#bSfx').onclick=function(){Snd.setSfx(!Snd.sfx);btns();if(Snd.sfx)Snd.click()};
 $('#bMus').onclick=function(){Snd.init();Snd.setMusic(!Snd.music);btns()};
 $('#iGo').onclick=function(){Snd.init();if(!Snd.sfx)Snd.setSfx(true);if(!Snd.music)Snd.setMusic(true);btns();Snd.jingle();Snd.start();closeDlg()};
