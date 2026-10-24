@@ -156,6 +156,7 @@ select.in option{background:#fff;color:var(--ink)}
 :root{padding-top:env(safe-area-inset-top,0px)}
 [hidden]{display:none!important}
 .topbar .sp{flex:1}
+.ib.ico{display:inline-grid;place-items:center;padding:6px 10px;line-height:0}
 .topbar{background:var(--night);box-shadow:0 6px 14px rgba(0,0,0,.25);max-width:none;padding-left:max(16px,calc((100vw - 1040px)/2));padding-right:max(16px,calc((100vw - 1040px)/2));margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
 .ph-size{display:grid;place-items:center;text-align:center;font-size:12px;line-height:1.3;color:var(--muted)}
 .ph-size b{display:block;font-size:16px;color:var(--ink)}
@@ -220,7 +221,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v8</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v9</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -507,9 +508,13 @@ btns();
 
 /* instalar y compartir */
 var defer=null,isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+function updShare(){var b=$('#bShare');b.title='Compartir';b.setAttribute('aria-label','Compartir');
+ if(!$('#bInst').hidden){b.classList.add('ico');b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>'}
+ else{b.classList.remove('ico');b.textContent='Compartir'}}
 if(standalone)$('#bInst').hidden=true;
+updShare();
 addEventListener('beforeinstallprompt',function(e){e.preventDefault();defer=e});
-addEventListener('appinstalled',function(){$('#bInst').hidden=true;toast('App instalada')});
+addEventListener('appinstalled',function(){$('#bInst').hidden=true;updShare();toast('App instalada')});
 $('#bInst').onclick=function(){Snd.click();if(defer){defer.prompt();defer.userChoice.then(function(){defer=null});return}
  if(isIOS)dlg('<h3>Instalar en iPhone</h3><div class="ios"><p>1. Abre esta página en <b>Safari</b>.</p><p>2. Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba).</p><p>3. Elige <b>Añadir a pantalla de inicio</b> y toca <b>Añadir</b>.</p></div><div class="acts"><button class="btn" type="button" id="iK">Entendido</button></div>');
  else dlg('<h3>Instalar la app</h3><div class="ios"><p>Abre el menú del navegador (los tres puntos) y elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</p></div><div class="acts"><button class="btn" type="button" id="iK">Entendido</button></div>');
