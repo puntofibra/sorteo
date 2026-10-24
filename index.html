@@ -223,7 +223,7 @@ textarea.in{resize:vertical;font:inherit}
     <div class="t" id="main"><div class="loading">CARGANDO EL SORTEO <i></i><i></i><i></i></div></div>
   </div>
 </div>
-<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v16</span></p>
+<p class="demo"><span id="pie">Sorteo de Navidad 2026</span> · <span style="opacity:.6">v17</span></p>
 
 <div class="ov" id="ov"><div class="dlg"><div class="cfr"><div class="t intro" id="dlg">
   <div class="tline"><span>LOTERÍA DE NAVIDAD</span><span>22/12/2026</span></div>
@@ -529,7 +529,7 @@ addEventListener('beforeinstallprompt',function(e){e.preventDefault();defer=e});
 addEventListener('appinstalled',function(){$('#bInst').hidden=true;updShare();toast('App instalada')});
 $('#bInst').onclick=function(){Snd.click();if(defer){defer.prompt();defer.userChoice.then(function(){defer=null});return}
  if(isIOS)dlg('<h3>Instalar en iPhone</h3><div class="ios"><p>1. Abre esta página en <b>Safari</b>.</p><p>2. Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba).</p><p>3. Elige <b>Añadir a pantalla de inicio</b> y toca <b>Añadir</b>.</p></div><div class="acts"><button class="btn" type="button" id="iK">Entendido</button></div>');
- else dlg('<h3>Instalar la app</h3><div class="ios"><p>Abre el menú del navegador (los tres puntos) y elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</p></div><div class="acts"><button class="btn" type="button" id="iK">Entendido</button></div>');
+ else dlg('<h3>Instalar la app</h3><div class="ios"><p>Tu navegador todavía no permite instalarla con un toque. Puedes hacerlo así:</p><p>1. Abre el menú del navegador (los <b>tres puntos ⋮</b>).<br>2. Elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</p>'+(/android/i.test(navigator.userAgent)?'<p class="muted">Si ya tienes instalada una app de sorteo de antes de esta versión, desinstálala y vuelve a instalarla: así cada sorteo se instala por separado con un toque.</p>':'')+'</div><div class="acts"><button class="btn" type="button" id="iK">Entendido</button></div>');
  $('#iK').onclick=closeDlg};
 $('#bShare').onclick=function(){Snd.click();var url=HOME,txt='Participa en el '+(S.cfg?S.cfg.titulo:'Sorteo de Navidad')+(S.cfg&&S.cfg.empresa?' de '+S.cfg.empresa:'')+'. Elige tu número del 01 al 00:';
  if(navigator.share){navigator.share({title:document.title,text:txt,url:url}).catch(function(){});return}
